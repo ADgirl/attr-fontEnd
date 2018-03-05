@@ -12,8 +12,8 @@
                 :open-names="openedSubmenuArr"
                 :menu-list="menuList">
                 <div slot="top" class="logo-con">
-                    <img v-show="!shrink"  src="../images/logo.jpg" key="max-logo" />
-                    <img v-show="shrink" src="../images/logo-min.jpg" key="min-logo" />
+                    <img v-show="!shrink"  src="../images/logo-default.png" key="max-logo" />
+                    <img v-show="shrink" src="../images/logo-min.png" key="min-logo" />
                 </div>
             </shrinkable-menu>
         </div>
@@ -32,8 +32,9 @@
                 <div class="header-avator-con">
                     <!-- <full-screen v-model="isFullScreen" @on-change="fullscreenChange"></full-screen> -->
                     <!-- <lock-screen></lock-screen> -->
-                    <message-tip v-model="mesCount"></message-tip>
+                    <!-- <message-tip v-model="mesCount"></message-tip> -->
                     <theme-switch></theme-switch>
+                    <language-switch></language-switch>
                     
                     <div class="user-dropdown-menu-con">
                         <Row type="flex" justify="end" align="middle" class="user-dropdown-innercon">
@@ -69,10 +70,11 @@
     import shrinkableMenu from './main-components/shrinkable-menu/shrinkable-menu.vue';
     import tagsPageOpened from './main-components/tags-page-opened.vue';
     import breadcrumbNav from './main-components/breadcrumb-nav.vue';
-    import fullScreen from './main-components/fullscreen.vue';
-    import lockScreen from './main-components/lockscreen/lockscreen.vue';
-    import messageTip from './main-components/message-tip.vue';
+    // import fullScreen from './main-components/fullscreen.vue';
+    // import lockScreen from './main-components/lockscreen/lockscreen.vue';
+    // import messageTip from './main-components/message-tip.vue';
     import themeSwitch from './main-components/theme-switch/theme-switch.vue';
+    import languageSwitch from './main-components/language-switch/language-switch.vue';
     import Cookies from 'js-cookie';
     import util from '@/libs/util.js';
     
@@ -81,10 +83,11 @@
             shrinkableMenu,
             tagsPageOpened,
             breadcrumbNav,
-            fullScreen,
-            lockScreen,
-            messageTip,
-            themeSwitch
+            // fullScreen,
+            // lockScreen,
+            // messageTip,
+            themeSwitch,
+            languageSwitch
         },
         data () {
             return {

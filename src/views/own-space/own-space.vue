@@ -46,7 +46,8 @@
                         <span>{{ userForm.department }}</span>
                     </FormItem>
                     <FormItem label="登录密码：">
-                        <Button type="text" size="small" @click="showEditPassword">修改密码</Button>
+                        <!-- <Button type="text" size="small" @click="showEditPassword">修改密码</Button> -->
+                        <a href="#/manager/resetPassword">修改密码</a>
                     </FormItem>
                     <div>
                         <Button type="text" style="width: 100px;" @click="cancelEditUserInfor">取消</Button>
@@ -56,7 +57,7 @@
             </div>
         </Card>
         <Modal v-model="editPasswordModal" :closable='false' :mask-closable=false :width="500">
-            <h3 slot="header" style="color:#2D8CF0">修改密码</h3>
+            <h3 slot="header" style="color:#2D8CF0" >修改密码</h3>
             <Form ref="editPasswordForm" :model="editPasswordForm" :label-width="100" label-position="right" :rules="passwordValidate">
                 <FormItem label="原密码" prop="oldPass" :error="oldPassError">
                     <Input v-model="editPasswordForm.oldPass" placeholder="请输入现在使用的密码" ></Input>

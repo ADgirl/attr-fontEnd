@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import iView from 'iview';
+import ElementUI from 'element-ui';
 import {router} from './router/index';
 import {appRouter} from './router/router';
 import store from './store';
@@ -9,8 +10,13 @@ import 'iview/dist/styles/iview.css';
 import VueI18n from 'vue-i18n';
 import util from './libs/util';
 
+import axios from 'axios';
+import $ from '@/vendors/jquery-vendor.js';
+import 'element-ui/lib/theme-chalk/index.css';
+
 Vue.use(VueI18n);
 Vue.use(iView);
+Vue.use(ElementUI);
 
 new Vue({
     el: '#app',

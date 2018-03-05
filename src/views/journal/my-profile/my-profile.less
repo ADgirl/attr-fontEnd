@@ -1,0 +1,36 @@
+@import '../../../styles/common.less';
+.profile-content{
+    max-width: 780px;
+    height: 700px;
+    border: 1px solid @border-line;
+    &-left{
+        height: 700px;
+        text-align: center;
+        // line-height: 700px;
+        background-color: #f6f7f9;
+        .upload{
+            vertical-align: middle;
+            margin-top: 100%;
+           
+        }
+        p {
+            cursor: default;
+        }
+        .icon{
+            width: 180px;
+            height: 180px;
+            border-radius: 5px;
+            border: 2px dashed @border-line;
+            text-align: center;
+            font-size: 96px;
+            line-height: 180px;
+            color: #d9d9d9;
+        }
+        p{
+            color: @detail-info-title;
+        }
+    }
+    &-right{
+        padding: 30px 40px;
+    }
+}
