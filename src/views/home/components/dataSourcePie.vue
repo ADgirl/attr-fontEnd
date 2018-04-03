@@ -16,6 +16,10 @@ export default {
         this.$nextTick(() => {
             var dataSourcePie = echarts.init(document.getElementById('data_source_con'));
             const option = {
+                title:{
+                    text:'部门员工',
+                    left:'center'
+                },
                 tooltip: {
                     trigger: 'item',
                     formatter: '{a} <br/>{b} : {c} ({d}%)'
@@ -23,7 +27,7 @@ export default {
                 legend: {
                     orient: 'vertical',
                     left: 'right',
-                    data: ['ios', 'android', 'pc', 'web', 'others']
+                    data: ['正常', '早退', '休假', '加班', '旷工','迟到']
                 },
                 series: [
                     {
@@ -32,11 +36,12 @@ export default {
                         radius: '66%',
                         center: ['50%', '60%'],
                         data: [
-                            {value: 2103456, name: 'ios', itemStyle: {normal: {color: '#9bd598'}}},
-                            {value: 1305923, name: 'android', itemStyle: {normal: {color: '#ffd58f'}}},
-                            {value: 543250, name: 'pc', itemStyle: {normal: {color: '#abd5f2'}}},
-                            {value: 798403, name: 'web', itemStyle: {normal: {color: '#ab8df2'}}},
-                            {value: 302340, name: 'others', itemStyle: {normal: {color: '#e14f60'}}}
+                            {value: 2103456, name: '正常', itemStyle: {normal: {color: '#9bd598'}}},
+                            {value: 130592, name: '早退', itemStyle: {normal: {color: '#ffd58f'}}},
+                            {value: 543250, name: '休假', itemStyle: {normal: {color: '#abd5f2'}}},
+                            {value: 798403, name: '加班', itemStyle: {normal: {color: '#ab8df2'}}},
+                            {value: 302340, name: '旷工', itemStyle: {normal: {color: '#e14f60'}}},
+                            {value: 302140, name: '迟到', itemStyle: {normal: {color: '#FF6347'}}}
                         ],
                         itemStyle: {
                             emphasis: {

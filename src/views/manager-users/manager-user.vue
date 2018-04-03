@@ -20,7 +20,7 @@
                         expand-on-click-node>
                         <span class="custom-tree-node" slot-scope="{ node, data }">
                             <span>{{ data.label }}</span>
-                            <div style="width:100%;">
+                            <div style="width:100%;" v-if="data.CoId || data.orgId || data.grpId">
                                 <span class="right">
                                     <el-button
                                         type="text"
@@ -29,6 +29,16 @@
                                         添加
                                     </el-button>
                                     <span>|</span>
+                                    <el-button
+                                        type="text"
+                                        size="mini"
+                                        @click="() => remove(node, data)">
+                                        删除
+                                    </el-button>
+                                </span>
+                            </div>
+                            <div style="width:100%;" v-else>
+                                <span class="right">
                                     <el-button
                                         type="text"
                                         size="mini"
@@ -59,24 +69,35 @@
                 </Card> 
             </Col>
         </Row>
+        <modal-list :show-add="modalAdd" :show-remove="modalRemove" :parent="parentNode" @appendPush="appendPush"></modal-list>
     </div>
 </template>
 <script>
+import modalList from './modal-list/modal-list.vue';
+
 let id = 1000;
 
 export default {
     name: 'managerUser',
+    components:{
+        modalList
+    },
     data(){
         return{
             height:'600',
+            modalAdd:false,
+            modalRemove:false,
+            parentNode:{},
             unitTree: [
                 {
                     label: '志高科技有限责任公司',
                     id:0,
+                    CoId:1,
                     children: [
                         {
                             label: '总裁办',
                             id:1,
+                            orgId:1,
                             children: [
                                 {
                                     label: '张高志',
@@ -91,6 +112,7 @@ export default {
                         {
                             label: '财务处',
                             id:4,
+                            orgId:2,
                             children: [
                                 {
                                     label: '刘承宇',
@@ -105,6 +127,7 @@ export default {
                         {
                             label: '行政处',
                             id:7,
+                            orgId:3,
                             children: [
                                 {
                                     label: '元宝',
@@ -119,10 +142,12 @@ export default {
                         {
                             label: '开发部',
                             id:10,
+                            orgId:4,
                             children: [
                                 {
                                     label: '开发一组',
                                     id:11,
+                                    grpId:1,
                                     children: [
                                         {
                                             label: '张子枫',
@@ -137,6 +162,7 @@ export default {
                                 {
                                     label: '开发二组',
                                     id:12,
+                                    grpId:2,
                                     children: [
                                         {
                                             label:'张颖',
@@ -153,6 +179,7 @@ export default {
                         {
                             label: '测试部',
                             id:13,
+                            orgId:4,
                             children: [
                                 {
                                     label: '潘粤明',
@@ -167,6 +194,7 @@ export default {
                         {
                             label: '设计部',
                             id:17,
+                            orgId:5,
                             children: [
                                 {
                                     label: '许诺',
@@ -181,6 +209,7 @@ export default {
                         {
                             label: '产品经理',
                             id:20,
+                            orgId:6,
                             children: [
                                 {
                                     label: '张子琪',
@@ -195,6 +224,7 @@ export default {
                         {
                             label: '策划部',
                             id:23,
+                            orgId:7,
                             children: [
                                 {
                                     label: '张若拉',
@@ -209,6 +239,7 @@ export default {
                         {
                             label: '运营部',
                             id:26,
+                            orgId:8,
                             children: [
                                 {
                                     label: '李海明',
@@ -223,6 +254,7 @@ export default {
                         {
                             label: '编辑部',
                             id:29,
+                            orgId:9,
                             children: [
                                 {
                                     label: '王琪琪',
@@ -237,6 +269,7 @@ export default {
                         {
                             label: '市场部',
                             id:32,
+                            orgId:10,
                             children: [
                                 {
                                     label: '陈诚',
@@ -258,69 +291,110 @@ export default {
             columnsList: [
                 {
                     title: '员工号',
-                    align: 'left',
+                    align: 'center',
                     key: 'number',
-                    width: 90
+                    width: 90,
+                    fixed: 'left'
                 },
                 {
                     title: '姓名',
-                    align: 'left',
+                    align: 'center',
                     key: 'name',
                     width: 120
                 },
                 {
                     title: '性别',
-                    align: 'left',
+                    align: 'center',
                     key: 'sex',
                     width: 80
                 },
                 {
                     title: '电话',
-                    align: 'left',
+                    align: 'center',
                     key: 'phone',
                     width: 130
                 },
                 {
                     title: '邮箱地址',
-                    align: 'left',
+                    align: 'center',
                     key: 'email',
-                    width: 140
+                    width: 160
                 },
                 {
                     title: '部门',
-                    align: 'left',
+                    align: 'center',
                     key: 'unitName',
                     width: 120
                 },
                 {
                     title: '职位名称',
-                    align: 'left',
+                    align: 'center',
                     key: 'position',
-                    width: 120
+                    width: 180
                 },
                 {
                     title: '任职状态',
-                    align: 'left',
+                    align: 'center',
                     key: 'status',
-                    width: 120
+                    width: 120,
+                    render: (h,params) => {
+                        const row = params.row;
+                        let text = '在职';
+                        switch (row.status) {
+                            case 0:
+                                text = '在职';
+                                break;
+                            case 1:
+                                text = '离职';
+                                break;
+                            default:
+                                break;
+                        }
+                        return h('p',{},text);
+                    }
                 },
                 {
                     title: '入职时间',
-                    align: 'left',
+                    align: 'center',
                     key: 'addTime',
-                    width: 120
-                },
-                {
-                    title: '离职时间',
-                    align: 'left',
-                    key: 'outTime',
-                    width: 120
+                    width: 160,
+                    render: (h,params) => {
+                        if(params.row.addTime == ''){
+                            return h('span',{},'—')
+                        }else{
+                            return h('span',{},params.row.addTime)
+                        }
+                    }
                 },
                 {
                     title: '管理员权限',
-                    align: 'left',
+                    align: 'center',
                     key: 'manageType',
-                    width: 120
+                    width: 120,
+                    render: (h,params) => {
+                        const row = params.row;
+                        let checkValue = row.manageType
+                        switch (checkValue) {
+                            case 0:
+                                checkValue = true;
+                                break;
+                            case 1:
+                                checkValue = false;
+                                break;
+                            default:
+                                break;
+                        }
+                        return h('i-switch',{
+                            props:{
+                                value:checkValue
+                            },
+                            on:{
+                                'on-change':(currentStatus) => {
+                                    console.log(currentStatus)
+                                }
+                            }
+                        });
+                    }
                 },
             ],
             unitPeople: [
@@ -335,8 +409,7 @@ export default {
                     position:'前端开发工程师',
                     status:0,
                     manageType:0,
-                    addTime:'2015-07-01 15:00',
-                    outTime:''
+                    addTime:'2015-07-01 15:00'
                 },
                 {
                     id:2,
@@ -349,8 +422,7 @@ export default {
                     position:'前端开发工程师',
                     status:0,
                     manageType:0,
-                    addTime:'2015-07-01 15:00',
-                    outTime:''
+                    addTime:'2015-07-01 15:00'
                 },
                 {
                     id:3,
@@ -363,8 +435,7 @@ export default {
                     position:'前端开发工程师',
                     status:0,
                     manageType:0,
-                    addTime:'2015-07-01 15:00',
-                    outTime:''
+                    addTime:'2015-07-01 15:00'
                 }
             ]
         }
@@ -374,7 +445,11 @@ export default {
     },
     methods: {
         append(data) {
-            const newChild = { id: id++, label: 'testtest', children: [] };
+            this.parentNode = data;
+            this.modalAdd = true;
+        },
+        appendPush: function(data){
+            const newChild = { id: data.id, label: data.name, children: [] };
             if (!data.children) {
             this.$set(data, 'children', []);
             }

@@ -2,54 +2,46 @@
     @import './attr-chart.less';
 </style>
 <template>
-    <div class="chart">
+    <div class="chart-content">
         <Card>
-            <Form slot="title" inline :label-width="100" :model="chartFilter">
+            <Form slot="title" inline :label-width="100" :model="chartFilter" class="chart-content-title">
                 <FormItem prop="date">
                     <Select slot="label" v-model="chartFilter.title" style="width:100px">
                         <Option v-for="item in titleList" :value="item.value" :key="item.value">{{ item.label }}</Option>
                     </Select>
-                    <span>:</span>
-                    <DatePicker type="month" placeholder="Select year-month" style="width: 200px"></DatePicker>
+                    <div style="margin-left:5px;line-height:51px;">
+                        <span>:</span>
+                        <DatePicker v-if="chartFilter.title == 1" type="month" placeholder="选择年月" style="width: 200px;"></DatePicker>
+                        <DatePicker v-else type="date" placeholder="选择日期" style="width: 200px;"></DatePicker>
+                    </div>
                 </FormItem>
                 <FormItem prop="person">
                     <Select slot="label" v-model="chartFilter.title2" style="width:100px">
                         <Option v-for="item in titleList2" :value="item.value" :key="item.value">{{ item.label }}</Option>
                     </Select>
-                    <span>:</span>
-                    <Select v-model="chartFilter.unit" style="width:100px">
-                        <Option v-for="item in titleList" :value="item.value" :key="item.value">{{ item.label }}</Option>
-                    </Select>
-                    <Select v-model="chartFilter.person" style="width:100px">
-                        <Option v-for="item in titleList" :value="item.value" :key="item.value">{{ item.label }}</Option>
-                    </Select>
+                    <div style="margin-left:5px;line-height:51px;">
+                        <span>:</span>
+                        <Select v-model="chartFilter.unit" style="width:100px">
+                            <Option v-for="item in titleList" :value="item.value" :key="item.value">{{ item.label }}</Option>
+                        </Select>
+                        <Select v-show="chartFilter.title2 == 0" v-model="chartFilter.person" style="width:100px">
+                            <Option v-for="item in titleList" :value="item.value" :key="item.value">{{ item.label }}</Option>
+                        </Select>
+                    </div>
+                    
                 </FormItem>
             </Form>
-            <div>
-                <Row class="margin-top-10">
-                    <Col span="12" style="height:250px;">
-                        <!-- <Card>
-                            <p slot="title" class="card-title">
-                                <Icon type="ios-pulse-strong"></Icon>
-                                数据来源统计
-                            </p> -->
-                            <div class="data-source-row">
-                                <data-source-pie></data-source-pie>
-                            </div>
-                        <!-- </Card> -->
+            <div class="chart-body">
+                <Row class="margin-bottom-10">
+                    <Col span="12" :style="{height:height+'px','overflow-x':'auto'}">
+                        <div class="data-source-row">
+                            <data-source-pie></data-source-pie>
+                        </div>
                     </Col>
-                <!-- </Row>
-                <Row class="margin-top-10"> -->
-                    <Col style="height:250px;" span="12">
-                        <!-- <Card>
-                            <p slot="title" class="card-title">
-                                <Icon type="ios-shuffle-strong"></Icon>
-                                上周每日服务调用量(万)
-                            </p> -->
-                            <div class="line-chart-con">
-                                <service-requests></service-requests>
-                            </div>
-                        <!-- </Card> -->
+                    <Col :style="{height:height+'px','overflow-x':'auto'}" span="12">
+                        <div class="line-chart-con">
+                            <service-requests></service-requests>
+                        </div>
                     </Col>
                 </Row>
             </div>
@@ -70,6 +62,7 @@ export default {
     },
     data(){
         return{
+            height: 250,
             titleList:[
                 {
                     value: 0,
@@ -98,6 +91,9 @@ export default {
                 person:null
             }
         }
+    },
+    mounted: function(){
+        this.height = document.body.scrollHeight - 275;
     }
 }
 </script>

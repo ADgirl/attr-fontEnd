@@ -64,10 +64,10 @@ export const otherRouter = {
             component: () => import('@/views/attendance/attr-chart/attr-chart.vue')
         },
         { 
-            path: 'ownspace', 
+            path: 'manager/ownspace', 
             title: '个人中心', 
             name: 'ownspace_index', 
-            component: () => import('@/views/own-space/own-space.vue') 
+            component: () => import('@/views/journal/my-profile/my-profile.vue') 
         },
         { 
             path: 'order/:order_id', 
@@ -94,6 +94,14 @@ export const appRouter = [
         component: Main,
         children: [
             {
+                path: 'attr-table',
+                icon: 'ios-grid-view',
+                name: 'attr-table',
+                title: '员工出勤表',
+                // component: () => import('@/views/my-components/draggable-list/draggable-list.vue')
+                component: () => import('@/views/attendance/attr-table/attr-table.vue')
+            },
+            {
                 path: 'attr-rate',
                 icon: 'ios-pie',
                 name: 'attr-rate',
@@ -101,14 +109,6 @@ export const appRouter = [
                 // component: () => import('@/views/my-components/image-editor/image-editor.vue')
                 component: () => import('@/views/attendance/attr-chart/attr-chart.vue')
             },
-            {
-                path: 'attr-table',
-                icon: 'ios-grid-view',
-                name: 'attr-table',
-                title: '员工出勤表',
-                // component: () => import('@/views/my-components/draggable-list/draggable-list.vue')
-                component: () => import('@/views/attendance/attr-table/attr-table.vue')
-            }
         ]
     },
     {
@@ -127,11 +127,12 @@ export const appRouter = [
                 component: () => import('@/views/manager-users/manager-user.vue') 
             },
             { 
-                path: 'ownspace', 
+                path: 'ownspace_', 
                 title: '个人中心', 
                 name: 'ownspace_index', 
                 icon:'ios-person',
-                component: () => import('@/views/own-space/own-space.vue') 
+                // component: () => import('@/views/own-space/own-space.vue') 
+                component: () => import('@/views/journal/my-profile/my-profile.vue') 
             },
             { 
                 path: 'resetPassword', 
@@ -142,86 +143,6 @@ export const appRouter = [
             }
         ]
     },
-    {
-        path: '/international',
-        icon: 'earth',
-        title: {i18n: 'international'},
-        name: 'international',
-        component: Main,
-        children: [
-            { path: 'index', title: {i18n: 'international'}, name: 'international_index', component: () => import('@/views/international/international.vue') }
-        ]
-    },
-    {
-        path: '/test',
-        icon: 'ios-infinite',
-        name: 'advanced-router',
-        title: '测试页面',
-        component: Main,
-        children: [
-            { 
-                path: 'mutative-router', 
-                title: '动态路由', 
-                name: 'mutative-router', 
-                icon: 'link', 
-                component: () => import('@/views/advanced-router/mutative-router.vue') 
-            },
-            { 
-                path: 'argument-page', 
-                title: '带参页面', 
-                name: 'argument-page', 
-                icon: 'android-send', 
-                component: () => import('@/views/advanced-router/argument-page.vue') 
-            },
-            { 
-                path: 'exportableTable', 
-                title: '表格导出数据', 
-                name: 'exportable-table', 
-                icon: 'code-download', 
-                component: () => import('@/views/tables/exportable-table.vue') 
-            },
-            { 
-                path: 'table2image', 
-                title: '表格转图片', 
-                name: 'table-to-image', 
-                icon: 'images', 
-                component: () => import('@/views/tables/table-to-image.vue') 
-            },
-            {
-                path: 'area-linkage',
-                icon: 'ios-more',
-                name: 'area-linkage',
-                title: '城市级联',
-                component: () => import('@/views/my-components/area-linkage/area-linkage.vue')
-            },
-            {
-                path: 'file-upload',
-                icon: 'android-upload',
-                name: 'file-upload',
-                title: '文件上传',
-                component: () => import('@/views/my-components/file-upload/file-upload.vue')
-            },
-            { 
-                path: 'index', 
-                title: '权限管理', 
-                name: 'access_index', 
-                component: () => import('@/views/access/access.vue') 
-            },
-            { 
-                path: 'index', 
-                title: '权限测试页', 
-                name: 'accesstest_index', 
-                access: 0, 
-                component: () => import('@/views/access/access-test.vue') 
-            },
-            { 
-                path: 'home_old', 
-                title: {i18n: 'home'}, 
-                name: 'home_old', 
-                component: () => import('@/views/home/home.vue') 
-            },
-        ]
-    }
 ];
 
 // 所有上面定义的路由都要写在下面的routers里

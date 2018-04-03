@@ -15,50 +15,62 @@
             <p>支持图片格式png/jpg/jpeg/bmp</p>
             </Col>
             <Col class="profile-content-right" span="16">
-            <Form ref="formValidate" :label-width="100" :model="info" :rules="ruleValidate">
-                <FormItem label="账户名称" prop="loginName">
-                    <Input v-model="info.loginName" type="text" placeholder="必填" disabled></Input>
-                </FormItem>
-                <FormItem label="姓名" prop="name">
-                    <Input v-model="info.name" type="text" placeholder="必填"></Input>
-                </FormItem>
-                <FormItem label="性别" prop="sex">
-                    <RadioGroup v-model="info.sex">
-                        <Radio label="1" >男</Radio>
-                        <Radio label="2" >女</Radio>
-                    </RadioGroup>
-                </FormItem>
-                <FormItem label="出生日期" prop="brithday">
-                    <DatePicker v-model="info.brithday" type="date" placeholder="选择日期"></DatePicker>
-                </FormItem>
-                <FormItem label="警号" prop="workCode">
-                    <Input v-model="info.workCode" type="text" placeholder="选填"></Input>
-                </FormItem>
-                <FormItem label="手机号码" prop="phoneNumber">
-                    <Input v-model="info.phoneNumber" type="text" placeholder="必填"></Input>
-                </FormItem>
-                <FormItem label="邮箱" prop="email">
-                    <Input v-model="info.email" type="text" placeholder="选填"></Input>
-                </FormItem>
-                <FormItem label="APP账户">
-                    <el-switch v-model="info.appOnOff" active-value="1" inactive-value="0">
-                    </el-switch>
-                </FormItem>
-                <FormItem label="所属单位" prop="orgId">
-                    <Select v-model="info.orgId" disabled>
-                        <Option v-for="item in orgData" :value="item.orgId" :key="item.orgId">{{ item.orgCname }}</Option>
-                    </Select>
-                </FormItem>
-                <FormItem label="所属角色" prop="role">
-                    <el-select class="select" v-model="info.roleArr" placeholder="全选" filterable multiple collapse-tags size="small" disabled>
-                        <el-option v-for="item in roleData" :key="item.roleId" :label="item.roleCname" :value="item.roleId">
-                        </el-option>
-                    </el-select>
-                </FormItem>
-                <FormItem>
-                    <Button type="primary" @click="save">保存</Button>
-                </FormItem>
-            </Form>
+            <Form 
+                    ref="userForm"
+                    :model="userForm" 
+                    :label-width="100" 
+                    label-position="right"
+                    :rules="inforValidate"
+                >
+                    <FormItem label="用户姓名：" prop="name">
+                        <div style="display:inline-block;width:300px;">
+                            <Input v-model="userForm.name" ></Input>
+                        </div>
+                    </FormItem>
+                    <FormItem label="性别" prop="sex">
+                        <RadioGroup v-model="userForm.sex">
+                            <Radio label="1" >男</Radio>
+                            <Radio label="2" >女</Radio>
+                        </RadioGroup>
+                    </FormItem>
+                    <FormItem label="出生日期" prop="brithday">
+                        <DatePicker v-model="userForm.brithday" type="date" placeholder="选择日期"></DatePicker>
+                    </FormItem>
+                    <FormItem label="用户手机：" prop="cellphone" >
+                        <div style="display:inline-block;width:204px;">
+                            <Input v-model="userForm.cellphone" @on-keydown="hasChangePhone"></Input>
+                        </div>
+                        <div style="display:inline-block;position:relative;">
+                            <Button @click="getIdentifyCode" :disabled="canGetIdentifyCode">{{ gettingIdentifyCodeBtnContent }}</Button>
+                            <div class="own-space-input-identifycode-con" v-if="inputCodeVisible">
+                                <div style="background-color:white;z-index:110;margin:10px;">
+                                    <Input v-model="securityCode" placeholder="请填写短信验证码" ></Input>
+                                    <div style="margin-top:10px;text-align:right">
+                                        <Button type="ghost" @click="cancelInputCodeBox">取消</Button>
+                                        <Button type="primary" @click="submitCode" :loading="checkIdentifyCodeLoading">确定</Button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </FormItem>
+                    <FormItem label="邮箱" prop="email">
+                        <Input v-model="userForm.email" type="text" placeholder="选填"></Input>
+                    </FormItem>
+                    <FormItem label="公司：">
+                        <span>{{ userForm.company }}</span>
+                    </FormItem>
+                    <FormItem label="部门：">
+                        <span>{{ userForm.department }}</span>
+                    </FormItem>
+                    <FormItem label="登录密码：">
+                        <!-- <Button type="text" size="small" @click="showEditPassword">修改密码</Button> -->
+                        <a href="#/manager/resetPassword">修改密码</a>
+                    </FormItem>
+                    <div>
+                        <Button type="text" style="width: 100px;" @click="cancelEditUserInfor">取消</Button>
+                        <Button type="primary" style="width: 100px;" :loading="save_loading" @click="saveEdit">保存</Button>
+                    </div>
+                </Form>
             </Col>
         </Row>
         </Col>
@@ -70,307 +82,160 @@
 
     export default {
       name: 'myProfile',
-      data() {
-        return {
-          info: {
-            loginName: '',
-            name: '',
-            sex: '',
-            brithday: '',
-            workCode: '',
-            phoneNumber: '',
-            email: '',
-            appOnOff: null,
-            org: '',
-            role: null,
-            roleArr: []
-          },
-          orgData: [],
-          roleData: [],
-          //初始化角色
-          defaultRoleId: '',
-
-          ruleValidate: {
-            name: [{
-              required: true,
-              message: '姓名不能为空',
-              trigger: 'blur'
-            },
-            {
-              min: 2,
-              max: 20,
-              message: '姓名只能输入2-20个汉字，例如：李四',
-              trigger: 'blur'
-            },
-            {
-              validator(rule, value, callback, source, options) {
-                var errors = [];
-                if (!/^[\u4E00-\u9FA5]{1,5}$/.test(value)) {
-                  callback('姓名只能输入2-20个汉字，例如：李四');
-                }
-                callback(errors);
-              }
-            }
-            ],
-            policeId: [{
-              required: false,
-              trigger: 'blur'
-            }],
-            phoneNumber: [{
-              required: true,
-              message: '手机号码不能为空',
-              trigger: 'blur'
-            },
-            {
-              number: true,
-              len: 11,
-              message: '请输入正确的手机号码',
-              trigger: 'blur'
-            }
-            ],
-            email: [{
-              type: 'email',
-              message: '格式错误',
-              trigger: 'blur'
-            }],
-            brithday: [{
-              required: false,
-              type: 'date',
-              message: '选择日期',
-              trigger: 'change'
-            }]
-          }
-        };
-      },
-      mounted: function () {
-        var that = this;
-        this.loadOrgData(function () {
-          that.loadRoleData(function () {
-            that.loadData();
-          });
-        });
-      },
-      methods: {
-        save: function () {
-          this.$refs.formValidate.validate(valid => {
-            if (valid) {
-              var user = Cookies.get('userId');
-              var time = util.dateFormat(new Date());
-              var birthDate = util.dateFormat(this.info.brithday, 'yyyy-MM-dd');
-              var appOnOff = this.info.appOnOff == true ? '1' : this.info.appOnOff;
-              var role = this.info.roleArr.join(',');
-              var sex = this.info.sex == 'male' ? '0' : this.info.sex;
-
-              var params = {
-                //'departId': this.info.departId,
-                'orgId': this.info.orgId,
-                'loginName': this.info.loginName,
-                'status': '1',
-                'name': this.info.name,
-                'sex': sex,
-                'brithday': birthDate,
-                'phoneNumber': this.info.phoneNumber,
-                'updatedUserid': user,
-                'roleIds': role
-              };
-              if (this.info.workCode != '') {
-                params.workCode = this.info.workCode;
-              }
-              if (appOnOff != '') {
-                params.appOnOff = appOnOff;
-              }
-              if (this.info.email != '') {
-                params.email = this.info.email;
-              }
-              if (this.info.pictureUrl != '') {
-                params.pictureUrl = this.info.pictureUrl;
-              }
-              if (this.info.remark != '') {
-                params.remark = this.info.remark;
-              }
-              params.userId = this.info.userId;
-              this.update(params);
+     data () {
+        const validePhone = (rule, value, callback) => {
+            var re = /^1[0-9]{10}$/;
+            if (!re.test(value)) {
+                callback(new Error('请输入正确格式的手机号'));
             } else {
-              this.$message.error('请确保信息填写完整！');
+                callback();
             }
-          });
-        },
-        update: function (filterParams) {
-          var that = this;
-
-          this.$http
-            .post('user/edit', filterParams)
-            .then(function (res) {
-              var response = res.data;
-              if (response.code === 0) {
-                that.$message.success('操作成功！');
-              } else {
-                var mes = '编辑用户失败！';
-                if (response.message) {
-                  mes = mes + ' 失败原因：' + response.message;
+        };
+        return {
+            userForm: {
+                name: '',
+                cellphone: '',
+                company: '',
+                department: '',
+                email:'',
+                sex:'',
+                birthday:''
+            },
+            uid: '', // 登录用户的userId
+            securityCode: '', // 验证码
+            phoneHasChanged: false, // 是否编辑了手机
+            save_loading: false,
+            identifyError: '', // 验证码错误
+            editPasswordModal: false, // 修改密码模态框显示
+            savePassLoading: false,
+            oldPassError: '',
+            identifyCodeRight: false, // 验证码是否正确
+            hasGetIdentifyCode: false, // 是否点了获取验证码
+            canGetIdentifyCode: false, // 是否可点获取验证码
+            checkIdentifyCodeLoading: false,
+            inforValidate: {
+                name: [
+                    { required: true, message: '请输入姓名', trigger: 'blur' }
+                ],
+                cellphone: [
+                    { required: true, message: '请输入手机号码' },
+                    { validator: validePhone }
+                ],
+                brithday: [{required: false,type: 'date',message: '选择日期',trigger: 'change'}],
+                email: [{type: 'email',message: '格式错误',trigger: 'blur'}],
+            },
+            inputCodeVisible: false, // 显示填写验证码box
+            initPhone: '',
+            gettingIdentifyCodeBtnContent: '获取验证码' // “获取验证码”按钮的文字
+        };
+    },
+    methods: {
+        getIdentifyCode () {
+            this.hasGetIdentifyCode = true;
+            this.$refs['userForm'].validate((valid) => {
+                if (valid) {
+                    this.canGetIdentifyCode = true;
+                    let timeLast = 60;
+                    let timer = setInterval(() => {
+                        if (timeLast >= 0) {
+                            this.gettingIdentifyCodeBtnContent = timeLast + '秒后重试';
+                            timeLast -= 1;
+                        } else {
+                            clearInterval(timer);
+                            this.gettingIdentifyCodeBtnContent = '获取验证码';
+                            this.canGetIdentifyCode = false;
+                        }
+                    }, 1000);
+                    this.inputCodeVisible = true;
+                    // you can write ajax request here
                 }
-                that.$message.error(mes);
-              }
             });
         },
-
-        //数据加载
-        loadData: function () {
-          var that = this;
-          var user = Cookies.get('userId');
-          var params = {
-            'userId': user
-          };
-
-          this.$http
-            .post('user/get', params)
-            .then(function (res) {
-              var response = res.data;
-              if (response.code === 0) {
-                that.info = response.data;
-                if (that.info.appOnOff) {
-                  that.info.appOnOff = that.info.appOnOff.toString();
-                }
-    
-                that.getOrgById(that.info.orgId);
-                if (that.info.initFlag === 1) {
-                  that.info.roleArr = [];
-                  that.info.roleArr.push(that.defaultRoleId); ;
-                } else {
-                  that.getRoleById(that.info.userId);
-                }
-              } else {
-                var mes = '查询用户列表失败！';
-                if (response.message) {
-                  mes = mes + ' 失败原因：' + response.message;
-                }
-                that.$message.error(mes);
-              }
+        // showEditPassword () {
+        //     this.editPasswordModal = true;
+        // },
+        cancelEditUserInfor () {
+            this.$store.commit('removeTag', 'ownspace_index');
+            localStorage.pageOpenedList = JSON.stringify(this.$store.state.app.pageOpenedList);
+            let lastPageName = '';
+            if (this.$store.state.app.pageOpenedList.length > 1) {
+                lastPageName = this.$store.state.app.pageOpenedList[1].name;
+            } else {
+                lastPageName = this.$store.state.app.pageOpenedList[0].name;
+            }
+            this.$router.push({
+                name: lastPageName
             });
         },
-
-        getRoleById: function (userId) {
-          var that = this;
-          if (typeof (userId) === 'undefined') {
-            return null;
-          } else {
-            var params = {
-              userId: userId
-            };
-            this.$http
-              .post('user/role/list', params)
-              .then(function (res) {
-                var response = res.data;
-                if (response.code === 0) {
-                  var data = response.data;
-                  var roles = '';
-                  var rolesArr = [];
-                  if (data) {
-                    data.forEach(element => {
-                      roles += roles.length === 0 ? element.roleCname
-                        : ',' + element
-                          .roleCname;
-                      rolesArr.push(element.roleId);
-                    });
-                    that.info.role = roles;
-                    that.info.roleArr = rolesArr;
-                  }
-                } else {
-                  var mes = '查询指定角色失败！';
-                  if (response.message) {
-                    mes = mes + ' 失败原因：' + response.message;
-                  }
-                  that.$message.error(mes);
+        saveEdit () {
+            this.$refs['userForm'].validate((valid) => {
+                if (valid) {
+                    if (this.phoneHasChanged && this.userForm.cellphone !== this.initPhone) { // 手机号码修改过了而且修改之后的手机号和原来的不一样
+                        if (this.hasGetIdentifyCode) { // 判断是否点了获取验证码
+                            if (this.identifyCodeRight) { // 判断验证码是否正确
+                                this.saveInfoAjax();
+                            } else {
+                                this.$Message.error('验证码错误，请重新输入');
+                            }
+                        } else {
+                            this.$Message.warning('请先点击获取验证码');
+                        }
+                    } else {
+                        this.saveInfoAjax();
+                    }
                 }
-              });
-          }
-        },
-
-        getOrgById: function (orgId) {
-          var that = this;
-          var params = {
-            'orgId': orgId
-          };
-
-          this.$http
-            .post('org/get', params)
-            .then(function (res) {
-              var response = res.data;
-              if (response.code === 0) {
-                var data = response.data;
-                that.info.org = data.orgId;
-              } else {
-                var mes = '查询指定单位失败！';
-                if (response.message) {
-                  mes = mes + ' 失败原因：' + response.message;
-                }
-                that.$message.error(mes);
-              }
             });
         },
-        //查询单位列表
-        loadOrgData: function (callback) {
-          var that = this;
-          var params = {};
-
-          this.$http
-            .post('org/list', params)
-            .then(function (res) {
-              var response = res.data;
-              if (response.code === 0) {
-                var data = response.data;
-                that.orgData = [];
-                data.forEach(element => {
-                  that.orgData.push(element);
-                });
-
-                if (callback) {
-                  callback();
-                }
-              } else {
-                var mes = '查询单位列表失败！';
-                if (response.message) {
-                  mes = mes + ' 失败原因：' + response.message;
-                }
-                that.$message.error(mes);
-              }
-            });
+        // cancelEditPass () {
+        //     this.editPasswordModal = false;
+        // },
+        // saveEditPass () {
+        //     this.$refs['editPasswordForm'].validate((valid) => {
+        //         if (valid) {
+        //             this.savePassLoading = true;
+        //             // you can write ajax request here
+        //         }
+        //     });
+        // },
+        init () {
+            this.userForm.name = 'Lison';
+            this.userForm.cellphone = '17712345678';
+            this.initPhone = '17712345678';
+            this.userForm.company = 'TalkingData';
+            this.userForm.department = '可视化部门';
         },
-        //查询角色列表
-        loadRoleData: function (callback) {
-          var that = this;
-          var params = {
-            'currentPage': 1,
-            'pageSize': 99999999
-          };
-
-          this.$http
-            .post('role/pages', params)
-            .then(function (res) {
-              var response = res.data;
-              if (response.code === 0) {
-                var data = response.data.datas;
-
-                that.roleData = [];
-                data.forEach(element => {
-                  if (element.initFlag === 1) {
-                    that.defaultRoleId = element.roleId;
-                  }
-                  that.roleData.push(element);
-                });
-                if (callback) {
-                  callback();
-                }
-              } else {
-                var mes = '查询角色列表失败！';
-                if (response.message) {
-                  mes = mes + ' 失败原因：' + response.message;
-                }
-                that.$message.error(mes);
-              }
-            });
+        cancelInputCodeBox () {
+            this.inputCodeVisible = false;
+            this.userForm.cellphone = this.initPhone;
+        },
+        submitCode () {
+            let vm = this;
+            vm.checkIdentifyCodeLoading = true;
+            if (this.securityCode.length === 0) {
+                this.$Message.error('请填写短信验证码');
+            } else {
+                setTimeout(() => {
+                    this.$Message.success('验证码正确');
+                    this.inputCodeVisible = false;
+                    this.checkIdentifyCodeLoading = false;
+                }, 1000);
+            }
+        },
+        hasChangePhone () {
+            this.phoneHasChanged = true;
+            this.hasGetIdentifyCode = false;
+            this.identifyCodeRight = false;
+        },
+        saveInfoAjax () {
+            this.save_loading = true;
+            setTimeout(() => {
+                this.$Message.success('保存成功');
+                this.save_loading = false;
+            }, 1000);
         }
-
-      }
+    },
+    mounted () {
+        this.init();
+    }
     };
 </script>

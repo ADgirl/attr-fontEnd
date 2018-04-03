@@ -30,9 +30,6 @@
                     </div>
                 </div>
                 <div class="header-avator-con">
-                    <!-- <full-screen v-model="isFullScreen" @on-change="fullscreenChange"></full-screen> -->
-                    <!-- <lock-screen></lock-screen> -->
-                    <!-- <message-tip v-model="mesCount"></message-tip> -->
                     <theme-switch></theme-switch>
                     <language-switch></language-switch>
                     
@@ -70,9 +67,6 @@
     import shrinkableMenu from './main-components/shrinkable-menu/shrinkable-menu.vue';
     import tagsPageOpened from './main-components/tags-page-opened.vue';
     import breadcrumbNav from './main-components/breadcrumb-nav.vue';
-    // import fullScreen from './main-components/fullscreen.vue';
-    // import lockScreen from './main-components/lockscreen/lockscreen.vue';
-    // import messageTip from './main-components/message-tip.vue';
     import themeSwitch from './main-components/theme-switch/theme-switch.vue';
     import languageSwitch from './main-components/language-switch/language-switch.vue';
     import Cookies from 'js-cookie';
@@ -83,9 +77,6 @@
             shrinkableMenu,
             tagsPageOpened,
             breadcrumbNav,
-            // fullScreen,
-            // lockScreen,
-            // messageTip,
             themeSwitch,
             languageSwitch
         },
