@@ -12,12 +12,25 @@ fs.open('./build/env.js', 'w', function(err, fd) {
     fs.write(fd, buf, 0, buf.length, 0, function(err, written, buffer) {});
 });
 
+const webpackServer = {  
+    protocol:'http://',  
+    // host:'100.66.137.26', 
+    // host:'192.168.1.2', 
+    host:'10.11.2.30',
+    port:'3000'  
+}  
+
 module.exports = merge(webpackBaseConfig, {
     devtool: '#source-map',
     output: {
         publicPath: '/dist/',
         filename: '[name].js',
         chunkFilename: '[name].chunk.js'
+    },
+    devServer: {  
+        host: webpackServer.host,  
+        inline: true,  
+        port: webpackServer.port  
     },
     plugins: [
         new ExtractTextPlugin({

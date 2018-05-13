@@ -4,8 +4,8 @@
 <template>
     <div class="modal-list">
         <!-- add some person -->
-        <Modal :value="showAdd" title="添加人员" @on-ok="sureAdd" @on-cancel="cancel" closable>
-            <Form class="modal-body":label-width="120" :rules="inforValidate">
+        <Modal :value="showAdd" :title="title" @on-ok="sureAdd" @on-cancel="cancel" closable>
+            <Form class="modal-body":label-width="120" :rules="inforValidate" v-if="parent.type == 1">
                 <FormItem prop="name" label="姓名" required>
                     <div style="display:inline-block;width:300px;">
                         <Input v-model="person.name" placeholder="必填"></Input>
@@ -13,13 +13,13 @@
                 </FormItem>
                 <FormItem prop="sex" label="性别">
                     <RadioGroup v-model="person.sex">
-                        <Radio label="1" >男</Radio>
-                        <Radio label="2" >女</Radio>
+                        <Radio label="0" >男</Radio>
+                        <Radio label="1" >女</Radio>
                     </RadioGroup>
                 </FormItem>
                 <FormItem prop="phone" label="电话" required>
                     <div style="display:inline-block;width:300px;">
-                        <Input v-model="person.cellphone" placeholder="必填"></Input>
+                        <Input v-model="person.phone" placeholder="必填"></Input>
                     </div>
                 </FormItem>
                 <FormItem prop="email" label="邮箱">
@@ -28,9 +28,9 @@
                     </div>
                 </FormItem>
                 <FormItem prop="unit" label="部门">
-                    <div style="display:inline-block;width:300px;">
-                        <Input v-model="person.unit" disabled></Input>
-                    </div>
+                    <Select v-model="person.unit" style="display:inline-block;width:300px;">
+                        <Option v-for="item in units" :value="item.unitNo" :key="item.value">{{ item.unit_name }}</Option>
+                    </Select>
                 </FormItem>
                 <FormItem prop="position" label="职位" required>
                     <div style="display:inline-block;width:300px;">
@@ -38,7 +38,14 @@
                     </div>
                 </FormItem>
                 <FormItem prop="addTime" label="入职时间">
-                    <DatePicker v-model="person.addTime" type="datetime" placeholder="选填" style="width: 300px"></DatePicker>
+                    <DatePicker v-model="person.add_time" type="date" placeholder="选填" style="width: 300px"></DatePicker>
+                </FormItem>
+            </Form>
+            <Form class="modal-body":label-width="120" :rules="inforValidate" v-else-if="parent.type == 0">
+                <FormItem prop="name" label="部门名称" required>
+                    <div style="display:inline-block;width:300px;">
+                        <Input v-model="unit.name" placeholder="必填"></Input>
+                    </div>
                 </FormItem>
             </Form>
         </Modal>
@@ -53,6 +60,9 @@
     </div>
 </template>
 <script>
+import userJSON from '../../component-data/user.js';
+import unitJSON from '../../component-data/unit.js';
+
 export default {
     name:'modalList',
     props:{
@@ -83,8 +93,9 @@ export default {
                 email:'',
                 unit:'',
                 position:'',
-                addTime:''
+                add_time:''
             },
+            title:'添加人员',
             inforValidate:{
                 name: [
                     { required: true, message: '请输入姓名', trigger: 'blur' }
@@ -95,7 +106,9 @@ export default {
                 ],
                 email: [{type: 'email',message: '格式错误',trigger: 'blur'}],
                 position: [{required:true,message:'请输入员工职位',trigger:'blur'}]
-            }
+            },
+            units:[],
+            unit:{} //  新增部门
         }
     },
     watch:{
@@ -104,35 +117,41 @@ export default {
         }
     },
     methods:{
+        getData(){
+            this.units = unitJSON[0].unit;
+        },
         sureAdd:function(){
-            if(this.parent.CoId){
-                const data = {
-                    id:this.parent.id++,
-                    person:person,
-                    orgId:this.parent.id++
-                }
-            }else if(this.parent.orgId){
-                const data = {
-                    id:this.parent.id++,
-                    person:person,
-                    grpId:this.parent.id++
-                }
-            }else if(this.parent.grpId){
-                const data = {
-                    id:this.parent.id++,
-                    person:person
-                }
+            var data = {};
+            if(this.parent.type == 0){
+                this.unit.id = "org_11" + this.units.length++;
+                this.unit.created_time = new Date();
+                this.unit.company_id = 0;
+                this.unit.type = 1;
+                this.unit.name = this.unit.name;
+                this.unit.children = [];
+                data = this.unit;
+            }else if(this.parent.type == 1){
+                this.person.id = userJSON[0].users.length++;
+                this.person.type = 2;
+                this.person.children = [];
+                data = this.person;
             }
-            console.log('sure')
-            console.log(data)
             this.$emit('appendPush',data);
         },
         sureDel:function(){
-Y
+            
         },
         cancel:function(){
             this.showAdd = false;
             this.showRemove = false;
+        }
+    },
+    created(){
+        this.getData();
+        if(this.parent.type == 0){
+            this.title = '添加部门';
+        }else{
+            this.title = '添加人员';
         }
     }
 }

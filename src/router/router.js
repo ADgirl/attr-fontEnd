@@ -37,16 +37,26 @@ export const page500 = {
     component: () => import('@/views/error-page/500.vue')
 };
 
-export const preview = {
-    path: '/preview',
-    name: 'preview',
-    component: () => import('@/views/form/article-publish/preview.vue')
-};
+// export const preview = {
+//     path: '/preview',
+//     name: 'preview',
+//     component: () => import('@/views/form/article-publish/preview.vue')
+// };
 
 export const locking = {
     path: '/locking',
     name: 'locking',
     component: () => import('@/views/main-components/lockscreen/components/locking-page.vue')
+};
+
+//移动端页面路由
+export const mobile = {
+    path: '/mobile/login',
+    name: 'mobileLogin',
+    meta: {
+        title: 'login-移动端登录'
+    },
+    component: () => import('@/views/mobile/login/login.vue')
 };
 
 // 作为Main组件的子页面展示但是不在左侧菜单显示的路由写在otherRouter里
@@ -116,7 +126,7 @@ export const appRouter = [
         icon: 'android-checkbox',
         name: 'manager',
         title: '信息管理',
-        component: Main,
+        component:Main,
         children: [
             { 
                 path: 'managerPeople', 
@@ -149,7 +159,8 @@ export const appRouter = [
 export const routers = [
     loginRouter,
     otherRouter,
-    preview,
+    // preview,
+    mobile,
     locking,
     ...appRouter,
     page500,

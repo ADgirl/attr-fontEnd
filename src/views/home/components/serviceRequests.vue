@@ -6,8 +6,35 @@
 import echarts from 'echarts';
 export default {
     name: 'serviceRequests',
+    props:{
+        lineTitle:{
+            type:String,
+            default: '所有员工'
+        },
+        lineData:{
+            type: Object,
+            default: () => {
+                return{
+                    nodeType: [],
+                    dataArr: {
+                        normal:[],
+                        late:[],
+                        early:[],
+                        vacation: [],
+                        absent: [],
+                        delay: []
+                    }
+                }
+            }
+        }
+    },
     mounted () {
+        var that = this;
         const option = {
+            title:{
+                text:that.lineTitle,
+                left:'center'
+            },
             tooltip: {
                 trigger: 'axis',
                 axisPointer: {
@@ -28,7 +55,7 @@ export default {
                 {
                     type: 'category',
                     boundaryGap: false,
-                    data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
+                    data: that.lineData.nodeType
                 }
             ],
             yAxis: [
@@ -38,55 +65,58 @@ export default {
             ],
             series: [
                 {
-                    name: '运营商/网络服务',
+                    name: '正常',
                     type: 'line',
                     stack: '总量',
                     areaStyle: {normal: {
-                        color: '#2d8cf0'
+                        color: '#9bd598'
                     }},
-                    data: [120, 132, 101, 134, 90, 230, 210]
+                    data: that.lineData.dataArr.normal
                 },
                 {
-                    name: '银行/证券',
+                    name: '早退',
                     type: 'line',
                     stack: '总量',
                     areaStyle: {normal: {
-                        color: '#10A6FF'
+                        color: '#ffd58f'
                     }},
-                    data: [257, 358, 278, 234, 290, 330, 310]
+                    data: that.lineData.dataArr.early
                 },
                 {
-                    name: '游戏/视频',
+                    name: '休假',
                     type: 'line',
                     stack: '总量',
                     areaStyle: {normal: {
-                        color: '#0C17A6'
+                        color: '#abd5f2'
                     }},
-                    data: [379, 268, 354, 269, 310, 478, 358]
+                    data: that.lineData.dataArr.vacation
                 },
                 {
-                    name: '餐饮/外卖',
+                    name: '加班',
                     type: 'line',
                     stack: '总量',
                     areaStyle: {normal: {
-                        color: '#4608A6'
+                        color: '#ab8df2'
                     }},
-                    data: [320, 332, 301, 334, 390, 330, 320]
+                    data: that.lineData.dataArr.delay
                 },
                 {
-                    name: '快递/电商',
+                    name: '旷工',
                     type: 'line',
                     stack: '总量',
-                    label: {
-                        normal: {
-                            show: true,
-                            position: 'top'
-                        }
-                    },
                     areaStyle: {normal: {
-                        color: '#398DBF'
+                        color: '#e14f60'
                     }},
-                    data: [820, 645, 546, 745, 872, 624, 258]
+                    data: that.lineData.dataArr.absent
+                },
+                {
+                    name: '迟到',
+                    type: 'line',
+                    stack: '总量',
+                    areaStyle: {normal: {
+                        color: '#FF6347'
+                    }},
+                    data: that.lineData.dataArr.late
                 }
             ]
         };

@@ -29,18 +29,18 @@
                     </FormItem>
                     <FormItem label="性别" prop="sex">
                         <RadioGroup v-model="userForm.sex">
-                            <Radio label="1" >男</Radio>
-                            <Radio label="2" >女</Radio>
+                            <Radio label="0" >男</Radio>
+                            <Radio label="1" >女</Radio>
                         </RadioGroup>
                     </FormItem>
                     <FormItem label="出生日期" prop="brithday">
-                        <DatePicker v-model="userForm.brithday" type="date" placeholder="选择日期"></DatePicker>
+                        <DatePicker v-model="userForm.birthday" format="yyyy-MM-dd" type="date" placeholder="选择日期"></DatePicker>
                     </FormItem>
                     <FormItem label="用户手机：" prop="cellphone" >
-                        <div style="display:inline-block;width:204px;">
+                        <div style="display:inline-block;width:193px;">
                             <Input v-model="userForm.cellphone" @on-keydown="hasChangePhone"></Input>
                         </div>
-                        <div style="display:inline-block;position:relative;">
+                        <!-- <div style="display:inline-block;position:relative;">
                             <Button @click="getIdentifyCode" :disabled="canGetIdentifyCode">{{ gettingIdentifyCodeBtnContent }}</Button>
                             <div class="own-space-input-identifycode-con" v-if="inputCodeVisible">
                                 <div style="background-color:white;z-index:110;margin:10px;">
@@ -51,7 +51,7 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </div> -->
                     </FormItem>
                     <FormItem label="邮箱" prop="email">
                         <Input v-model="userForm.email" type="text" placeholder="选填"></Input>
@@ -74,11 +74,13 @@
             </Col>
         </Row>
         </Col>
+        <Modal></Modal>
     </Row>
 </template>
 <script>
     import Cookies from 'js-cookie';
     import util from '@/libs/util';
+    import companyJSON from '../../component-data/company';
 
     export default {
       name: 'myProfile',
@@ -93,13 +95,13 @@
         };
         return {
             userForm: {
-                name: '',
-                cellphone: '',
-                company: '',
-                department: '',
-                email:'',
-                sex:'',
-                birthday:''
+                name: Cookies.get("user"),
+                cellphone: '18306451860',
+                company: companyJSON[0].company[0].company_name,
+                department: '行政处',
+                email:'123465@163.com',
+                sex: 0,
+                birthday:'1996-12-25'
             },
             uid: '', // 登录用户的userId
             securityCode: '', // 验证码
@@ -198,11 +200,13 @@
         //     });
         // },
         init () {
-            this.userForm.name = 'Lison';
+            this.userForm.name = Cookies.get("user");
             this.userForm.cellphone = '17712345678';
             this.initPhone = '17712345678';
-            this.userForm.company = 'TalkingData';
-            this.userForm.department = '可视化部门';
+            this.userForm.company = companyJSON[0].company[0].company_name;
+            this.userForm.department = '行政处';
+            this.userForm.sex = 0;
+            this.userForm.birthday = '1995-12-25';
         },
         cancelInputCodeBox () {
             this.inputCodeVisible = false;

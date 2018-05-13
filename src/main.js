@@ -14,6 +14,7 @@ import axios from 'axios';
 import $ from '@/vendors/jquery-vendor.js';
 import 'element-ui/lib/theme-chalk/index.css';
 
+
 Vue.use(VueI18n);
 Vue.use(iView);
 Vue.use(ElementUI);

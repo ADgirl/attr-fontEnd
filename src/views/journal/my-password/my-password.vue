@@ -6,10 +6,10 @@
         <Col :lg="{span:9,offset:7}" :md="{ span: 9, offset: 7 }">
         <Form :label-width="100" :model="pasValue" :rules="ruleValidate">
             <FormItem prop="oldPas" label="原始密码">
-                <Input type="password" v-model="pasValue.oldPas" style="width:300px;"></Input>
+                <Input type="password" :autofocus="true" v-model="pasValue.oldPas" style="width:300px;"></Input>
             </FormItem>
             <FormItem prop="newPas" label="新密码">
-                <Input type="password" v-model="pasValue.newPas" style="width:300px;"></Input>
+                <Input type="password" :autofocus="true" v-model="pasValue.newPas" style="width:300px;"></Input>
             </FormItem>
             <FormItem label="密码强度">
                 <div class="pas-form-slider">
@@ -20,7 +20,7 @@
                 </div>
             </FormItem>
             <FormItem prop="confirmPas" label="确认密码">
-                <Input type="password" v-model="pasValue.confirmPas" style="width:300px;"></Input>
+                <Input type="password" :autofocus="true" v-model="pasValue.confirmPas" style="width:300px;"></Input>
             </FormItem>
             <FormItem>
                 <Button @click="save" type="primary" style="width:300px;">保存</Button>
@@ -153,35 +153,46 @@
           return modes;
         },
         save: function () {
-          var user = Cookies.get('userId');
-          var params = {
-            'userId': user,
-            'oldPassword': $.md5(this.pasValue.oldPas),
-            'newPassword': $.md5(this.pasValue.newPas),
-            'updatedUserid': user
-          };
-
-          var that = this;
-          this.$http
-            .post('user/password', params)
-            .then(function (res) {
-              var response = res.data;
-              if (response.code === 0) {
-                that.$message.success('操作成功！');
-                // 退出登录
-                that.$store.commit('logout', that);
-                that.$store.commit('clearOpenedSubmenu');
-                // that.$router.push({
-                //   name: 'login'
-                // });
-              } else {
-                var mes = '修改用户密码失败！';
-                if (response.message) {
-                  mes = mes + ' 失败原因：' + response.message;
-                }
-                that.$message.error(mes);
-              }
-            });
+          // var user = Cookies.get('userId');
+          // var params = {
+          //   'userId': user,
+          //   'oldPassword': $.md5(this.pasValue.oldPas),
+          //   'newPassword': $.md5(this.pasValue.newPas),
+          //   'updatedUserid': user
+          // };
+          if((this.pasValue.oldPas!=""&&this.pasValue.newPas!=""&&this.pasValue.confirmPas!="")
+          &&(this.pasValue.oldPas!=null&&this.pasValue.newPas!=null&&this.pasValue.confirmPas!=null)){
+            Cookies.set('password',this.pasValue.newPas);
+            var user = Cookies.get('user');
+            var password = Cookies.get('password');
+            console.log('user:'+user+','+'password:'+password);
+            this.$Modal.success({
+                              title: '提示',
+                              content: '密码修改成功'
+                          });
+          }
+          
+          // var that = this;
+          // this.$http
+          //   .post('user/password', params)
+          //   .then(function (res) {
+          //     var response = res.data;
+          //     if (response.code === 0) {
+          //       that.$message.success('操作成功！');
+          //       // 退出登录
+          //       that.$store.commit('logout', that);
+          //       that.$store.commit('clearOpenedSubmenu');
+          //       // that.$router.push({
+          //       //   name: 'login'
+          //       // });
+          //     } else {
+          //       var mes = '修改用户密码失败！';
+          //       if (response.message) {
+          //         mes = mes + ' 失败原因：' + response.message;
+          //       }
+          //       that.$message.error(mes);
+          //     }
+          //   });
         }
       }
     };

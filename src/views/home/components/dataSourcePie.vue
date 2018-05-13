@@ -7,17 +7,37 @@ import echarts from 'echarts';
 
 export default {
     name: 'dataSourcePie',
+    props:{
+        pieTitle:{
+            type: String,
+            default: '所有员工'
+        },
+        pieData: {
+            type: Object,
+            default: () => {
+                return {
+                    normal:0,
+                    early: 0,
+                    vacation: 0,
+                    delay: 0,
+                    absent: 0,
+                    late: 0
+                }
+            }
+        }
+    },
     data () {
         return {
             //
         };
     },
     mounted () {
+        var that = this;
         this.$nextTick(() => {
             var dataSourcePie = echarts.init(document.getElementById('data_source_con'));
             const option = {
                 title:{
-                    text:'部门员工',
+                    text:that.pieTitle,
                     left:'center'
                 },
                 tooltip: {
@@ -31,17 +51,17 @@ export default {
                 },
                 series: [
                     {
-                        name: '访问来源',
+                        name: that.pieTitle,
                         type: 'pie',
                         radius: '66%',
                         center: ['50%', '60%'],
                         data: [
-                            {value: 2103456, name: '正常', itemStyle: {normal: {color: '#9bd598'}}},
-                            {value: 130592, name: '早退', itemStyle: {normal: {color: '#ffd58f'}}},
-                            {value: 543250, name: '休假', itemStyle: {normal: {color: '#abd5f2'}}},
-                            {value: 798403, name: '加班', itemStyle: {normal: {color: '#ab8df2'}}},
-                            {value: 302340, name: '旷工', itemStyle: {normal: {color: '#e14f60'}}},
-                            {value: 302140, name: '迟到', itemStyle: {normal: {color: '#FF6347'}}}
+                            {value: that.pieData.normal, name: '正常', itemStyle: {normal: {color: '#9bd598'}}},
+                            {value: that.pieData.early, name: '早退', itemStyle: {normal: {color: '#ffd58f'}}},
+                            {value: that.pieData.vacation, name: '休假', itemStyle: {normal: {color: '#abd5f2'}}},
+                            {value: that.pieData.delay, name: '加班', itemStyle: {normal: {color: '#ab8df2'}}},
+                            {value: that.pieData.absent, name: '旷工', itemStyle: {normal: {color: '#e14f60'}}},
+                            {value: that.pieData.late, name: '迟到', itemStyle: {normal: {color: '#FF6347'}}}
                         ],
                         itemStyle: {
                             emphasis: {
