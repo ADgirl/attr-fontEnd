@@ -45,7 +45,7 @@ export default {
                 }
             },
             grid: {
-                top: '3%',
+                top: '4%',
                 left: '1.2%',
                 right: '1%',
                 bottom: '3%',
@@ -67,7 +67,7 @@ export default {
                 {
                     name: '正常',
                     type: 'line',
-                    stack: '总量',
+                    // stack: '总量',
                     areaStyle: {normal: {
                         color: '#9bd598'
                     }},
@@ -76,7 +76,7 @@ export default {
                 {
                     name: '早退',
                     type: 'line',
-                    stack: '总量',
+                    // stack: '总量',
                     areaStyle: {normal: {
                         color: '#ffd58f'
                     }},
@@ -85,7 +85,7 @@ export default {
                 {
                     name: '休假',
                     type: 'line',
-                    stack: '总量',
+                    // stack: '总量',
                     areaStyle: {normal: {
                         color: '#abd5f2'
                     }},
@@ -94,7 +94,7 @@ export default {
                 {
                     name: '加班',
                     type: 'line',
-                    stack: '总量',
+                    // stack: '总量',
                     areaStyle: {normal: {
                         color: '#ab8df2'
                     }},
@@ -103,7 +103,7 @@ export default {
                 {
                     name: '旷工',
                     type: 'line',
-                    stack: '总量',
+                    // stack: '总量',
                     areaStyle: {normal: {
                         color: '#e14f60'
                     }},
@@ -112,7 +112,7 @@ export default {
                 {
                     name: '迟到',
                     type: 'line',
-                    stack: '总量',
+                    // stack: '总量',
                     areaStyle: {normal: {
                         color: '#FF6347'
                     }},

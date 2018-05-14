@@ -159,132 +159,99 @@ export default {
         this.height = document.body.scrollHeight - 275;
     },
     methods:{
-        getData: function() {
-            this.unitJSON = unitJSON[0].unit;
-            this.personJSON = personJSON[0].users;
-            var persons = personJSON[0].users;
-            var managers = managerJSON[0].manager;
-            var workes = workJSON[0].work;
+        //根据月份查所有员工的饼状图和折线图
+        monthPieAndLine: function(currentMonth,workes){
+            // console.log(currentMonth)
             var that = this;
-            this.pieTitle = that.lineTitle = '所有员工本月考勤统计';
-
             var normal = [],delay = [],early = [],late = [],absent = [],vacation = [];
             var n = 0,d = 0,e = 0,l = 0,v = 0,a = 0;
-            var res = [],res2 = [];
-            var currentMonth = '2018-05';
-
-            for(var i=0;i<workes.length;i++){
+            var res = [],res2 = [],i = 0,k = 0;
+            that.pieData = {
+                normal:0,
+                early: 0,
+                vacation: 0,
+                delay: 0,
+                absent: 0,
+                late: 0
+            };
+            //日期去重并排序
+            for(i=0;i<workes.length;i++){
                 if(res.indexOf(workes[i].work_date)==-1){
                     res.push(workes[i].work_date);
                     res.sort();
                 }
             }
-            // if(res.length > 5){
-            //     res = res.slice(0,5);
-            // }
-            workes.forEach(item => {
-                res.forEach((dateItem,index) => {
-                    if(item.work_date.slice(0,7) == currentMonth){
+
+            //日期分月
+            for(i = 0;i < res.length; i++){
+                if(res2.indexOf(res[i].slice(0,7)) == -1){
+                    res2.push(res[i].slice(0,7));
+                    res2.sort();
+                }
+            }
+            res2.forEach((item,index) => {
+                if(item == currentMonth){
+                    k = index;
+                }else if(index == res2.length+1){
+                    k = -1;
+                }
+            })
+
+            //日期分月排序
+            var diff = res[0].slice(0,7);
+            var objMonth = [],arr = [];
+            for(i = 0;i < res.length;i++){
+                if(res[i].slice(0,7) == diff){
+                    arr.push(res[i]);
+                }else{
+                    diff = res[i].slice(0,7);
+                    objMonth.push(arr);
+                    arr = [];
+                    arr.push(res[i]);
+                }
+            }
+            objMonth.push(arr);
+            //判断是否存在当前查询月的数据
+            if(k == -1){
+                this.$Message.error('暂无相关数据');
+                return;
+            }
+            console.log(objMonth[k])
+            //筛选出当月的不同考勤状态的总人数，以及当月不同日期不同考勤状态的人数
+            objMonth[k].forEach((dateItem,index) => {
+                that.pieData = {
+                    normal:0,
+                    early: 0,
+                    vacation: 0,
+                    delay: 0,
+                    absent: 0,
+                    late: 0
+                };
+                n = 0;d = 0;e = 0;l = 0;v = 0;a = 0;
+                normal[index] = 0;late[index] = 0;early[index] = 0;delay[index] = 0;vacation[index] = 0;absent[index] = 0;
+                workes.forEach((item,workIndex) => {
+                    that.switchWorkState(item.work_state);
+                    if(dateItem == item.work_date){
                         switch (item.work_state) {
                             case 0:
-                                that.pieData.normal++;
-                                if(that.pieData.normal > 0){
-                                    if(dateItem == item.work_date){
-                                        n++;
-                                        normal[index] = n;
-                                    }
-                                }else{
-                                    for(var r = 0;r < res.length;r++){
-                                        normal[r] = 0;
-                                    }
-                                }
-                                
-                                
-                                break;
+                                normal[index]++;
+                            break;
                             case 1:
-                                that.pieData.delay++;
-                                if(that.pieData.delay > 0){
-                                    if(dateItem == item.work_date){
-                                        d++;
-                                        delay[index] = d;
-                                    }
-                                }else{
-                                    for(var r = 0;r < res.length;r++){
-                                        delay[r] = 0;
-                                    }
-                                }
-                                
-                                break;
+                                delay[index]++;
+                            break;
                             case 2:
-                                that.pieData.early++;
-                                if(that.pieData.early > 0){
-                                    if(dateItem == item.work_date){
-                                        e++;
-                                        early[index] = e;
-                                    }
-                                }else{
-                                    for(var r = 0;r < res.length;r++){
-                                        early[r] = 0;
-                                    }
-                                }
-                                
-                                break;
+                                early[index]++;
+                            break;
                             case 3:
-                                that.pieData.absent++;
-                                if(that.pieData.absent > 0){
-                                    if(dateItem == item.work_date){
-                                        a++;
-                                        absent[index] = a;
-                                    }
-                                }else{
-                                    for(var r = 0;r < res.length;r++){
-                                        absent[r] = 0;
-                                    }
-                                }
-                                
-                                break;
+                                absent[index]++;
+                            break;
                             case 4:
-                                that.pieData.late++;
-                                if(that.pieData.late > 0){
-                                    if(dateItem == item.work_date){
-                                        l++;
-                                        late[index] = l;
-                                    }
-                                }else{
-                                    for(var r = 0;r < res.length;r++){
-                                        late[r] = 0;
-                                    }
-                                }
-                                
-                                break;
+                                late[index]++;
+                            break;
                             case 5:
-                                that.pieData.vacation++;
-                                if(that.pieData.vacation > 0){
-                                    if(dateItem == item.work_date){
-                                        v++;
-                                        vacation[index] = v;
-                                    }
-                                }else{
-                                    for(var r = 0;r < res.length;r++){
-                                        vacation[r] = 0;
-                                    }
-                                }
-                                
-                                break;
-                            default:
-                                that.pieData.normal++;
-                                if(that.pieData.normal > 0){
-                                    if(dateItem == item.work_date){
-                                        n++;
-                                        normal[index] = n;
-                                    }
-                                }else{
-                                    for(var r = 0;r < res.length;r++){
-                                        normal[r] = 0;
-                                    }
-                                }
-                                
-                                break;
+                                vacation[index]++;
+                            break;
+                            default:break;
                         }
                     }
                     
@@ -301,6 +268,44 @@ export default {
                     delay: delay
                 }
             };
+            // console.log(that.pieData)
+        },
+        //考勤状态分类switch
+        switchWorkState: function(index){
+            var that = this;
+                switch (index) {
+                    case 0:
+                        that.pieData.normal++;
+                        break;
+                    case 1:
+                        that.pieData.delay++;
+                        break;
+                    case 2:
+                        that.pieData.early++;
+                        break;
+                    case 3:
+                        that.pieData.absent++;
+                        break;
+                    case 4:
+                        that.pieData.late++;
+                        break;
+                    case 5:
+                        that.pieData.vacation++;
+                        break;
+                }
+        },
+        getData: function() {
+            this.unitJSON = unitJSON[0].unit;
+            this.personJSON = personJSON[0].users;
+            var persons = personJSON[0].users;
+            var managers = managerJSON[0].manager;
+            var workes = workJSON[0].work;
+            var that = this;
+            this.pieTitle = that.lineTitle = '所有员工本月考勤统计';
+            var currentMonth = '2018-05';
+            this.monthPieAndLine(currentMonth,workes);
+            // console.log(that.pieData);
+            // console.log(that.lineData);
         },
 
         search: function() {
@@ -333,30 +338,12 @@ export default {
                     works.forEach((work) => {
                          users.forEach((user) => {
                              if(work.number == user.number && work.work_date == util.dateFormat(dt,'yyyy-MM-dd')){
-                                switch (work.work_state) {
-                                    case 0:
-                                        that.pieData.normal++;
-                                        break;
-                                    case 1:
-                                        that.pieData.delay++;
-                                        break;
-                                    case 2:
-                                        that.pieData.early++;
-                                        break;
-                                    case 3:
-                                        that.pieData.absent++;
-                                        break;
-                                    case 4:
-                                        that.pieData.late++;
-                                        break;
-                                    case 5:
-                                        that.pieData.vacation++;
-                                        break;
-                                }
+                                that.switchWorkState(work.work_state);
                             }
                         })
                     });
-                    console.log(that.pieData)
+                    console.log(that.pieData);
+                    console.log(that.lineData);
                    
                }else{   //时间人员都有
                     if(userType == 0){  //一人一天
@@ -372,263 +359,55 @@ export default {
                             users.forEach((userItem) => {
                                 works.forEach((workItem) => {
                                     if(userItem.number == workItem.number && userItem.unit_no == unit && workItem.work_date == util.dateFormat(dt,'yyyy-MM-dd')){
-                                        switch (workItem.work_state) {
-                                            case 0:
-                                                that.pieData.normal++;
-                                                break;
-                                            case 1:
-                                                that.pieData.delay++;
-                                                break;
-                                            case 2:
-                                                that.pieData.early++;
-                                                break;
-                                            case 3:
-                                                that.pieData.absent++;
-                                                break;
-                                            case 4:
-                                                that.pieData.late++;
-                                                break;
-                                            case 5:
-                                                that.pieData.vacation++;
-                                                break;
-                                        }
+                                        that.switchWorkState(workItem.work_state);
                                     }
                                 })
                             });
-                            console.log(that.pieData)
+                            console.log(that.pieData);
+                            console.log(that.lineData)
                     }
                }
             } else if((month != "" && month != null)&&timeType == 1){    //1：一个月
-            console.log(month);
+                that.pieData = {
+                        normal:0,
+                        early: 0,
+                        vacation: 0,
+                        delay: 0,
+                        absent: 0,
+                        late: 0
+                    };
                 that.pieData.pieTitle = that.lineData.lineTitle = util.dateFormat(month,'yyyy年MM月') + '员工考勤统计';
-                console.log(that.pieData.pieTitle)
+                // console.log(that.pieData.pieTitle)
                 if((userType == 0&&person == null) ||(userType == 1&&unit == null)){    //第二个选项没有选,默认统计全体员工
                     var currentMonth = util.dateFormat(month,'yyyy-MM');
-                    var res = [];
-                    var normal = [],delay = [],early = [],late = [],absent = [],vacation = [];
-                    var n = 0,d = 0,e = 0,l = 0,v = 0,a = 0;
-                    works.forEach((workItem) => {
-                        workItem.work_dmonth = workItem.work_date.slice(0,7);
-                        if(workItem.work_month == currentMonth){
-                            if(res.indexOf(workes[i].work_date)==-1){
-                                res.push(workes[i].work_date);
-                                res.sort();
-                            }
-                            console.log(res);
-                            // switch (item.work_state) {
-                            //     case 0:
-                            //         that.pieData.normal++;
-                            //         if(that.pieData.normal > 0){
-                            //             if(dateItem == item.work_date){
-                            //                 n++;
-                            //                 normal[index] = n;
-                            //             }
-                            //         }else{
-                            //             for(var r = 0;r < res.length;r++){
-                            //                 normal[r] = 0;
-                            //             }
-                            //         }
-                                    
-                                    
-                            //         break;
-                            //     case 1:
-                            //         that.pieData.delay++;
-                            //         if(that.pieData.delay > 0){
-                            //             if(dateItem == item.work_date){
-                            //                 d++;
-                            //                 delay[index] = d;
-                            //             }
-                            //         }else{
-                            //             for(var r = 0;r < res.length;r++){
-                            //                 delay[r] = 0;
-                            //             }
-                            //         }
-                                    
-                            //         break;
-                            //     case 2:
-                            //         that.pieData.early++;
-                            //         if(that.pieData.early > 0){
-                            //             if(dateItem == item.work_date){
-                            //                 e++;
-                            //                 early[index] = e;
-                            //             }
-                            //         }else{
-                            //             for(var r = 0;r < res.length;r++){
-                            //                 early[r] = 0;
-                            //             }
-                            //         }
-                                    
-                            //         break;
-                            //     case 3:
-                            //         that.pieData.absent++;
-                            //         if(that.pieData.absent > 0){
-                            //             if(dateItem == item.work_date){
-                            //                 a++;
-                            //                 absent[index] = a;
-                            //             }
-                            //         }else{
-                            //             for(var r = 0;r < res.length;r++){
-                            //                 absent[r] = 0;
-                            //             }
-                            //         }
-                                    
-                            //         break;
-                            //     case 4:
-                            //         that.pieData.late++;
-                            //         if(that.pieData.late > 0){
-                            //             if(dateItem == item.work_date){
-                            //                 l++;
-                            //                 late[index] = l;
-                            //             }
-                            //         }else{
-                            //             for(var r = 0;r < res.length;r++){
-                            //                 late[r] = 0;
-                            //             }
-                            //         }
-                                    
-                            //         break;
-                            //     case 5:
-                            //         that.pieData.vacation++;
-                            //         if(that.pieData.vacation > 0){
-                            //             if(dateItem == item.work_date){
-                            //                 v++;
-                            //                 vacation[index] = v;
-                            //             }
-                            //         }else{
-                            //             for(var r = 0;r < res.length;r++){
-                            //                 vacation[r] = 0;
-                            //             }
-                            //         }
-                                    
-                            //         break;
-                            //     default:
-                            //         that.pieData.normal++;
-                            //         if(that.pieData.normal > 0){
-                            //             if(dateItem == item.work_date){
-                            //                 n++;
-                            //                 normal[index] = n;
-                            //             }
-                            //         }else{
-                            //             for(var r = 0;r < res.length;r++){
-                            //                 normal[r] = 0;
-                            //             }
-                            //         }
-                                    
-                            //         break;
-                            // }
-                            
-                            res.forEach((dateItem,index) => {
-                    if(item.work_date.slice(0,7) == currentMonth){
-                        switch (item.work_state) {
-                            case 0:
-                                that.pieData.normal++;
-                                if(that.pieData.normal > 0){
-                                    if(dateItem == item.work_date){
-                                        n++;
-                                        normal[index] = n;
-                                    }
-                                }else{
-                                    for(var r = 0;r < res.length;r++){
-                                        normal[r] = 0;
-                                    }
-                                }
-                                
-                                
-                                break;
-                            case 1:
-                                that.pieData.delay++;
-                                if(that.pieData.delay > 0){
-                                    if(dateItem == item.work_date){
-                                        d++;
-                                        delay[index] = d;
-                                    }
-                                }else{
-                                    for(var r = 0;r < res.length;r++){
-                                        delay[r] = 0;
-                                    }
-                                }
-                                
-                                break;
-                            case 2:
-                                that.pieData.early++;
-                                if(that.pieData.early > 0){
-                                    if(dateItem == item.work_date){
-                                        e++;
-                                        early[index] = e;
-                                    }
-                                }else{
-                                    for(var r = 0;r < res.length;r++){
-                                        early[r] = 0;
-                                    }
-                                }
-                                
-                                break;
-                            case 3:
-                                that.pieData.absent++;
-                                if(that.pieData.absent > 0){
-                                    if(dateItem == item.work_date){
-                                        a++;
-                                        absent[index] = a;
-                                    }
-                                }else{
-                                    for(var r = 0;r < res.length;r++){
-                                        absent[r] = 0;
-                                    }
-                                }
-                                
-                                break;
-                            case 4:
-                                that.pieData.late++;
-                                if(that.pieData.late > 0){
-                                    if(dateItem == item.work_date){
-                                        l++;
-                                        late[index] = l;
-                                    }
-                                }else{
-                                    for(var r = 0;r < res.length;r++){
-                                        late[r] = 0;
-                                    }
-                                }
-                                
-                                break;
-                            case 5:
-                                that.pieData.vacation++;
-                                if(that.pieData.vacation > 0){
-                                    if(dateItem == item.work_date){
-                                        v++;
-                                        vacation[index] = v;
-                                    }
-                                }else{
-                                    for(var r = 0;r < res.length;r++){
-                                        vacation[r] = 0;
-                                    }
-                                }
-                                
-                                break;
-                            default:
-                                that.pieData.normal++;
-                                if(that.pieData.normal > 0){
-                                    if(dateItem == item.work_date){
-                                        n++;
-                                        normal[index] = n;
-                                    }
-                                }else{
-                                    for(var r = 0;r < res.length;r++){
-                                        normal[r] = 0;
-                                    }
-                                }
-                                
-                                break;
-                        }
-                    }
-                    
-                });
-                        }
-                    });
+                    // console.log(currentMonth)
+                    that.monthPieAndLine(currentMonth,works);
                     console.log(that.pieData);
+                    console.log(that.lineData)
 
-                }else{
-
+                }else{  
+                    var currentMonth = util.dateFormat(month,'yyyy-MM');
+                    if(userType == 0){  //一个月某个员工的饼状图
+                        works.forEach((workItem) => {
+                            if(workItem.work_date.slice(0,7) == currentMonth && workItem.number == person){
+                                that.switchWorkState(workItem.work_state);
+                            }
+                        });
+                        console.log(that.pieData)
+                    }else{      //一个月某个部门的考勤折线图和饼状图
+                        // works.forEach(workItem => {
+                        //     users.forEach( userItem => {
+                        //         if(workItem.work_date.slice(0,7) == currentMonth&&userItem.unit_no == unit){
+                        //             console.log(workItem.work_date)
+                        //             that.switchWorkState(workItem.work_state);
+                        //         }
+                        //         if(userItem.unit_no == unit){
+                                    
+                        //         }
+                        //     })
+                        // console.log(this.pieData)
+                        // });
+                    }
                 }
             }
         },

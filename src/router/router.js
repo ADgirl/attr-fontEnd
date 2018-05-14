@@ -71,7 +71,7 @@ export const otherRouter = {
             title: {i18n: 'home'}, 
             name: 'home_index', 
             // component: () => import('@/views/my-components/image-editor/image-editor.vue') 
-            component: () => import('@/views/attendance/attr-chart/attr-chart.vue')
+            component: () => import('@/views/attendance/home/home.vue')
         },
         { 
             path: 'manager/ownspace', 

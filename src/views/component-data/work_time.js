@@ -434,10 +434,10 @@ export default [{
         },
         {
             "number": 1024,
-            "work_date": "2018-05-03",
+            "work_date": "2018-05-02",
             "work_up": " 07:45:47",
-            "work_down": " 18:02:17",
-            "work_state": 0,
+            "work_down": " 19:02:17",
+            "work_state": 1,
             "update_remark": null,
             "update_user": null
         },
@@ -454,8 +454,8 @@ export default [{
             "number": 1022,
             "work_date": "2018-05-03",
             "work_up": " 08:00:47",
-            "work_down": " 18:20:06",
-            "work_state": 0,
+            "work_down": " 15:20:06",
+            "work_state": 2,
             "update_remark": null,
             "update_user": null
         },

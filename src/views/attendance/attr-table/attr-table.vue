@@ -298,13 +298,13 @@ export default {
       var person = this.chartFilter.person;
       var unit = this.chartFilter.unit;
 
-      if (timeType == 0) {
+      if (timeType == 0) {  //timeType:0,日期;1:月份
         if (dt == "" || dt == null) {
           dt = "2018-05-01";
         } else {
           dt = util.dateFormat(dt,"YYYY-MM-dd");
         }
-        if (userType == 0) {
+        if (userType == 0) {  //userType:0,员工;1:部门
           if (person.length == 0) {
             this.tableData.forEach(item => {
               if (item.work_date == dt) {

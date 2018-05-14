@@ -31,6 +31,16 @@ export default {
             //
         };
     },
+    computed:{
+        pt: function(){
+            return this.pieTitle;
+        }
+    },
+    watch:{
+        pt(newValue,old){
+            console.log(newValue,old)
+        }
+    },
     mounted () {
         var that = this;
         this.$nextTick(() => {

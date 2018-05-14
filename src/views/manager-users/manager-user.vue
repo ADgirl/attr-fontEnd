@@ -319,7 +319,7 @@ export default {
             const parent = node.parent;
             const children = parent.data.children || parent.data;
             const index = children.findIndex(data => data.id === data.id);
-            this.$confirm('确定要删除该节点吗？', '温馨提示', {
+            this.$confirm('确定要删除该部门或人员吗？', '温馨提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
                 type: 'warning'
