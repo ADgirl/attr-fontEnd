@@ -1,4 +1,5 @@
 import Main from '@/views/Main.vue';
+import mobileMain from '@/views/mobile/mobile_Main.vue';
 
 // 不作为Main组件的子页面展示的页面单独写，如下
 export const loginRouter = {
@@ -50,13 +51,25 @@ export const locking = {
 };
 
 //移动端页面路由
-export const mobile = {
-    path: '/mobile/login',
-    name: 'mobileLogin',
-    meta: {
-        title: 'login-移动端登录'
-    },
-    component: () => import('@/views/mobile/login/login.vue')
+export const mobileRouter = {
+    path: '/mobile',
+    name: 'mobile',
+    component:mobileMain,
+    children:[
+        { 
+            path: 'login', 
+            title: '移动端登录', 
+            name: 'mobile_login', 
+            component: () => import('@/views/mobile/login/login.vue')
+        },
+        { 
+            path: 'home', 
+            title: '移动端首页', 
+            name: 'mobile_home', 
+            component: () => import('@/views/mobile/home/home.vue')
+        },
+    ]
+    
 };
 
 // 作为Main组件的子页面展示但是不在左侧菜单显示的路由写在otherRouter里
@@ -160,7 +173,7 @@ export const routers = [
     loginRouter,
     otherRouter,
     // preview,
-    mobile,
+    mobileRouter,
     locking,
     ...appRouter,
     page500,

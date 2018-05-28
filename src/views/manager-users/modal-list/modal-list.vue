@@ -4,8 +4,8 @@
 <template>
     <div class="modal-list">
         <!-- add some person -->
-        <Modal :value="showAdd" :title="title" @on-ok="sureAdd" @on-cancel="cancel" closable>
-            <Form class="modal-body":label-width="120" :rules="inforValidate" v-if="parent.type == 1">
+        <Modal :value="showAdd" :title="title" @on-ok="sureAdd('person')" @on-cancel="cancel" closable>
+            <Form class="modal-body" ref="person"  :model="person" :label-width="120" :rules="formValidate" v-if="parent.type == 1">
                 <FormItem prop="name" label="姓名" required>
                     <div style="display:inline-block;width:300px;">
                         <Input v-model="person.name" placeholder="必填"></Input>
@@ -27,11 +27,11 @@
                         <Input v-model="person.email" type="text" placeholder="选填"></Input>
                     </div>
                 </FormItem>
-                <FormItem prop="unit" label="部门">
+                <!-- <FormItem prop="unit" label="部门">
                     <Select v-model="person.unit" style="display:inline-block;width:300px;">
                         <Option v-for="item in units" :value="item.unitNo" :key="item.value">{{ item.unit_name }}</Option>
                     </Select>
-                </FormItem>
+                </FormItem> -->
                 <FormItem prop="position" label="职位" required>
                     <div style="display:inline-block;width:300px;">
                         <Input v-model="person.position" placeholder="必填"></Input>
@@ -39,13 +39,6 @@
                 </FormItem>
                 <FormItem prop="addTime" label="入职时间">
                     <DatePicker v-model="person.add_time" type="date" placeholder="选填" style="width: 300px"></DatePicker>
-                </FormItem>
-            </Form>
-            <Form class="modal-body":label-width="120" :rules="inforValidate" v-else-if="parent.type == 0">
-                <FormItem prop="name" label="部门名称" required>
-                    <div style="display:inline-block;width:300px;">
-                        <Input v-model="unit.name" placeholder="必填"></Input>
-                    </div>
                 </FormItem>
             </Form>
         </Modal>
@@ -96,7 +89,7 @@ export default {
                 add_time:''
             },
             title:'添加人员',
-            inforValidate:{
+            formValidate:{
                 name: [
                     { required: true, message: '请输入姓名', trigger: 'blur' }
                 ],
@@ -104,15 +97,20 @@ export default {
                     { required: true, message: '请输入手机号码' },
                     { validator: validePhone }
                 ],
-                email: [{type: 'email',message: '格式错误',trigger: 'blur'}],
-                position: [{required:true,message:'请输入员工职位',trigger:'blur'}]
+                email: [
+                    {type: 'email',message: '格式错误',trigger: 'blur'}
+                ],
+                position: [
+                    {required:true,message:'请输入员工职位',trigger:'blur'}
+                ]
             },
             units:[],
             unit:{} //  新增部门
         }
     },
     watch:{
-        parent:function(val){
+        parent:function(val,old){
+            console.log(val)
             this.person.unit = val.label;
         }
     },
@@ -120,23 +118,33 @@ export default {
         getData(){
             this.units = unitJSON[0].unit;
         },
-        sureAdd:function(){
-            var data = {};
-            if(this.parent.type == 0){
-                this.unit.id = "org_11" + this.units.length++;
-                this.unit.created_time = new Date();
-                this.unit.company_id = 0;
-                this.unit.type = 1;
-                this.unit.name = this.unit.name;
-                this.unit.children = [];
-                data = this.unit;
-            }else if(this.parent.type == 1){
-                this.person.id = userJSON[0].users.length++;
-                this.person.type = 2;
-                this.person.children = [];
-                data = this.person;
-            }
-            this.$emit('appendPush',data);
+        sureAdd:function(name){
+            var that = this;
+            this.$refs[name].validate((valid) => {
+                    if (valid) {
+                        var data = {};
+                        if(this.parent.type == 0){
+                            this.unit.id = "org_11" + this.units.length++;
+                            this.unit.created_time = new Date();
+                            this.unit.company_id = 0;
+                            this.unit.type = 1;
+                            this.unit.name = this.unit.name;
+                            this.unit.children = [];
+                            data = this.unit;
+                        }else if(this.parent.type == 1){
+                            this.person.id = userJSON[0].users.length++;
+                            this.person.type = 2;
+                            this.person.children = [];
+                            this.person.unit_no = this.parent.id;
+                            this.person.unit_name = this.parent.name;
+                            data = this.person;
+                        }
+                        this.$emit('appendPush',data);
+                    } else {
+                        this.$Message.error('添加失败');
+                    }
+                })
+            
         },
         sureDel:function(){
             

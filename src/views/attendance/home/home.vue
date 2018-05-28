@@ -13,7 +13,7 @@ export default {
         }
     },
     mounted: function(){
-        this.height = document.body.scrollHeight - 150;
+        this.height = document.body.scrollHeight - 120;
         this.getTime();
     },
     computed:{

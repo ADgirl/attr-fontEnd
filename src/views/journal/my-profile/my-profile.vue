@@ -33,9 +33,9 @@
                             <Radio label="1" >女</Radio>
                         </RadioGroup>
                     </FormItem>
-                    <FormItem label="出生日期" prop="brithday">
+                    <!-- <FormItem label="出生日期" prop="brithday">
                         <DatePicker v-model="userForm.birthday" format="yyyy-MM-dd" type="date" placeholder="选择日期"></DatePicker>
-                    </FormItem>
+                    </FormItem> -->
                     <FormItem label="用户手机：" prop="cellphone" >
                         <div style="display:inline-block;width:193px;">
                             <Input v-model="userForm.cellphone" @on-keydown="hasChangePhone"></Input>

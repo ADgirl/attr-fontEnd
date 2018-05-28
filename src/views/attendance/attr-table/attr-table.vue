@@ -32,6 +32,7 @@
                 </FormItem>
                 <FormItem>
                     <Button type="primary" size="default" icon="ios-search" @click="search">查询</Button>
+                    <Button type="primary" size="default" icon="ios-trash-outline" @click="reset">重置</Button>
                 </FormItem>
             </Form>
             <Table border style="margin:2px;" highlight-row no-data-text="无数据" :height="height" :columns="tableColumns" :data="tableData2"></Table>
@@ -180,21 +181,23 @@ export default {
             const row = params.row;
             let that = this;
             if (row.update_remark == "" || row.update_remark == null) {
-              return h(
-                "Button",
-                {
-                  props: {
-                    type: "primary",
-                    size: "small"
-                  },
-                  on: {
-                    click: function() {
-                      that.resetRemark(row);
-                    }
-                  }
-                },
-                "编辑"
-              );
+              if(row.work_state != 0){
+                  return h(
+                    "Button",
+                    {
+                      props: {
+                        type: "primary",
+                        size: "small"
+                      },
+                      on: {
+                        click: function() {
+                          that.resetRemark(row);
+                        }
+                      }
+                    },
+                    "编辑"
+                  );
+              }
             } else {
               return h("span", {}, row.update_remark);
             }
@@ -241,6 +244,16 @@ export default {
       this.height = document.body.scrollHeight - 270;
   },
   methods: {
+      reset:function(){
+        this.chartFilter = {
+              timeType: 0,
+              userType: 0,
+              month: "",
+              date: "",
+              unit: "",
+              person: []
+            };
+      },
       getData: function() {
           this.unitJSON = unitJSON[0].unit;
           this.personJSON = personJSON[0].users;
@@ -299,12 +312,14 @@ export default {
       var unit = this.chartFilter.unit;
 
       if (timeType == 0) {  //timeType:0,日期;1:月份
+      console.log("日期")
         if (dt == "" || dt == null) {
           dt = "2018-05-01";
         } else {
           dt = util.dateFormat(dt,"YYYY-MM-dd");
         }
-        if (userType == 0) {  //userType:0,员工;1:部门
+        if (userType == 0) {  //userType:0,员工;1:部门 日期+员工
+        console.log("日期+员工")
           if (person.length == 0) {
             this.tableData.forEach(item => {
               if (item.work_date == dt) {
@@ -320,7 +335,8 @@ export default {
               });
             }
           }
-        } else {
+        } else { //部门+日期
+        console.log("部门+日期")
           if (unit == null || unit == "") {
             this.tableData.forEach(item => {
               if (item.work_date == dt) {
@@ -328,27 +344,38 @@ export default {
               }
             });
           } else {
-            this.tableData.forEach(item => {
-              if (item.work_date == dt && item.unit_no == unit) {
-                that.tableData2.push(item);
+             var choosePeople = [];
+            this.personJSON.forEach((userItem) => {
+              if(userItem.unit_no == unit){
+                choosePeople.push(userItem);
               }
-            });
+            })
+            for(var i=0;i<choosePeople.length;i++){
+                this.tableData.forEach( (item) => {
+                  if (item.work_date == dt && item.number == choosePeople[i].number) {
+                    that.tableData2.push(item);
+                  }
+              });
+            }
+            
           }
         }
-      } else {
+      } else { //月份
+      console.log("月份")
         if (month == "" || month == null) {
           month = "2018-05";
         } else {
             month = util.dateFormat(month,"yyyy-MM");
         }
-        if (userType == 0) {
+        if (userType == 0) { //月份+员工
+        console.log("月份+员工")
           if (person.length == 0) {
             this.tableData.forEach(item => {
               if (item.work_date.slice(0, 7) == month) {
                 that.tableData2.push(item);
               }
             });
-          } else {
+          } else { 
             for (var i = 0; i < person.length; i++) {
               this.tableData.forEach(item => {
                 if (
@@ -360,7 +387,8 @@ export default {
               });
             }
           }
-        } else {
+        } else { //月份+部门
+          console.log("月份+部门")
           if (unit == "" || unit == null) {
             this.tableData.forEach(item => {
               if (item.work_date.slice(0, 7) == month) {
@@ -368,11 +396,23 @@ export default {
               }
             });
           } else {
-            this.tableData.forEach(item => {
-              if (item.work_date.slice(0, 7) == month && item.unit_no == unit) {
-                that.tableData2.push(item);
+            
+            var choosePeople = [];
+            this.personJSON.forEach((userItem) => {
+              if(userItem.unit_no == unit){
+                choosePeople.push(userItem);
               }
-            });
+            })
+              for (var i = 0; i < choosePeople.length; i++) {
+                this.tableData.forEach(item => {
+                  if (
+                    item.work_date.slice(0, 7) == month &&
+                    item.number == choosePeople[i].number
+                  ) {
+                    that.tableData2.push(item);
+                  }
+                });
+              }
           }
         }
       }

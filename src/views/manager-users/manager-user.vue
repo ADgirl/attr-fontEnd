@@ -106,6 +106,9 @@
                         <FormItem label="入职时间:" prop="add_time">
                             <Input type="text" v-model="userInfo.add_time" disabled></Input>
                         </FormItem>
+                        <!-- <FormItem label="入职时间:" prop="add_time">
+                            <Button type="primary" @click="selectAll">查询</Button>
+                        </FormItem> -->
                     </Form>
                 </Card> 
             </Col>
@@ -122,6 +125,7 @@ import companyJSON from '../component-data/company.js';
 import unitJSON from '../component-data/unit.js';
 import userJSON from '../component-data/user.js';
 import company from '../component-data/company.js';
+import axios from 'axios';
 
 let id = 1000;
 
@@ -227,9 +231,20 @@ export default {
         }
     },
     mounted: function(){
+        this.getData();
         this.height = document.body.scrollHeight - 122;
     },
     methods: {
+    //     selectAll(){
+    //         axios.get('http://localhost:8080/CarRentalSSM/user/select').then(res => {
+    //     console.log("success")
+    //                 console.log(data)
+    // })
+    // .catch(err =>{
+    //     console.log("error")
+    //                 console.log(err)
+    // });
+    //     },
         getData: function(){
             var users = userJSON[0].users;
             var units = unitJSON[0].unit;
@@ -309,7 +324,7 @@ export default {
             this.modalAdd = true;
         },
         appendPush: function(data){
-            console.log(data)
+            // console.log(data)
             if (!this.parentNode.children) {
                 this.$set(data, 'children', []);
             }
@@ -354,6 +369,7 @@ export default {
             table2excel.transform(this.$refs.tableExport, 'hrefToExportTable', this.excelFileName);
         },
         nodeClick: function(node){
+            // console.log(node)
             this.nodeType = node.type;
             var that = this;
             if(node.type == 2){
@@ -371,19 +387,31 @@ export default {
                 }else{
                     node.sex = '女'
                 }
-                unitJSON[0].unit.forEach((item) => {
-                    if(item.unitNo == node.unit_no){
-                        that.userInfo = {
+                if(typeof(node.unit) == 'undefined'){
+                    that.userInfo = {
                             name: node.name,
                             sex: node.sex,
                             phone: node.phone,
                             email: node.email,
-                            unit: item.unit_name,
+                            unit: node.unit_name,
                             position: node.position,
                             add_time: node.add_time.slice(0,10)
                         }
-                    }
-                })
+                }else{
+                    unitJSON[0].unit.forEach((item) => {
+                        if(item.unitNo == node.unit_no){
+                            that.userInfo = {
+                                name: node.name,
+                                sex: node.sex,
+                                phone: node.phone,
+                                email: node.email,
+                                unit: item.unit_name,
+                                position: node.position,
+                                add_time: node.add_time.slice(0,10)
+                            }
+                        }
+                    })
+                }
             }else if(node.type == 0){
                 that.unitPeople = [];
                 userJSON[0].users.forEach((item) => {
@@ -426,7 +454,7 @@ export default {
                     
                 })
             }else{
-                console.log(node)
+                // console.log(node)
                 unitJSON[0].unit.forEach((item3) => {
                     if(node.id == item3.unitNo){
                         that.unitPeople = [];
@@ -458,10 +486,11 @@ export default {
                 })
             }
         }
-    },
-    created(){
-        this.getData();
     }
+    // created(){
+    //     console.log(this)
+    //     this.getData();
+    // }
 }
 </script>
 

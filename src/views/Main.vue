@@ -118,9 +118,14 @@
             init () {
                 let pathArr = util.setCurrentPath(this, this.$route.name);
                 this.$store.commit('updateMenulist');
-                if (pathArr.length >= 2) {
-                    this.$store.commit('addOpenSubmenu', pathArr[1].name);
-                }
+                // if (pathArr.length >= 2) {
+                //     for(var i = 0;i < pathArr.length;i++){
+
+                //         this.$store.commit('addOpenSubmenu', pathArr[i].name);
+                //     }
+                // }
+                // console.log(pathArr)
+                this.$store.commit('addOpenSubmenu', pathArr[1].name);
                 this.userName = Cookies.get('user');
                 let messageCount = 3;
                 this.messageCount = messageCount.toString();

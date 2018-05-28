@@ -33,6 +33,7 @@
                 
                 <FormItem>
                     <Button type="primary" size="default" icon="ios-search" @click="search">查询</Button>
+                    <Button type="primary" size="default" icon="ios-trash-outline" @click="reset">重置</Button>
                 </FormItem>
             </Form>
             <div class="chart-body">
@@ -123,6 +124,9 @@ export default {
             }
         }
     },
+    created(){
+        this.getData();
+    },
     computed: {
         title2ed() {
             return this.chartFilter.userType;
@@ -159,6 +163,17 @@ export default {
         this.height = document.body.scrollHeight - 275;
     },
     methods:{
+        //重置
+        reset(){
+            this.chartFilter = {
+                timeType:0,
+                userType:0,
+                date:null,
+                month:null,
+                unit:null,
+                person:null
+            };
+        },
         //根据月份查所有员工的饼状图和折线图
         monthPieAndLine: function(currentMonth,workes){
             // console.log(currentMonth)
@@ -216,7 +231,6 @@ export default {
                 this.$Message.error('暂无相关数据');
                 return;
             }
-            console.log(objMonth[k])
             //筛选出当月的不同考勤状态的总人数，以及当月不同日期不同考勤状态的人数
             objMonth[k].forEach((dateItem,index) => {
                 that.pieData = {
@@ -301,15 +315,12 @@ export default {
             var managers = managerJSON[0].manager;
             var workes = workJSON[0].work;
             var that = this;
-            this.pieTitle = that.lineTitle = '所有员工本月考勤统计';
+            this.pieTitle = this.lineTitle = '所有员工本月考勤统计';
             var currentMonth = '2018-05';
             this.monthPieAndLine(currentMonth,workes);
-            // console.log(that.pieData);
-            // console.log(that.lineData);
         },
 
         search: function() {
-            console.log('search')
             var that = this;
             this.tableData2 = [];
             var timeType = this.chartFilter.timeType;
@@ -321,9 +332,9 @@ export default {
             var works = workJSON[0].work;
             var units = unitJSON[0].unit;
             var unit = this.chartFilter.unit;
-            console.log('timeType:'+timeType+','+'userType:'+userType);
 
-            if ((dt != "" && dt != null)&&timeType == 0) {    //0：一天
+            if ((dt != "" && dt != null)&&timeType == 0) {    //0：一天:，0：日期
+            console.log("日期")
                 that.pieData = {
                         normal:0,
                         early: 0,
@@ -332,9 +343,9 @@ export default {
                         absent: 0,
                         late: 0
                     };
-               if((userType == 0&&person == null) ||(userType == 1&&unit == null)){//第二个条件未选择,即没有选人员，默认全部员工
-                    // month = util.dateFormat(new Date(),"YYYY-MM");
-                    that.pieData.pieTitle = util.dateFormat(dt,'yyyy年MM月dd日') + '员工考勤统计';
+               if(person == null && unit == null){//第二个条件未选择,即没有选人员，默认全部员工
+                    console.log("日期+null")
+                    that.pieTitle = util.dateFormat(dt,'yyyy年MM月dd日') + '员工考勤统计';
                     works.forEach((work) => {
                          users.forEach((user) => {
                              if(work.number == user.number && work.work_date == util.dateFormat(dt,'yyyy-MM-dd')){
@@ -342,20 +353,19 @@ export default {
                             }
                         })
                     });
-                    console.log(that.pieData);
-                    console.log(that.lineData);
-                   
-               }else{   //时间人员都有
+               }else{   //日期人员都有
                     if(userType == 0){  //一人一天
+                    console.log("日期+人员")
                         return;
                     }else{  //一天一个部门
+                    console.log("日期+部门")
                         var unitname = '';
                         units.forEach((item) => {
                             if(item.unitNo == unit){
                                 unitname = item.unit_name;
                             }
                         })
-                        that.pieData.pieTitle = util.dateFormat(dt,'yyyy年MM月dd日') + unitname + '员工考勤统计';
+                        that.pieTitle = util.dateFormat(dt,'yyyy年MM月dd日') + unitname + '考勤统计';
                             users.forEach((userItem) => {
                                 works.forEach((workItem) => {
                                     if(userItem.number == workItem.number && userItem.unit_no == unit && workItem.work_date == util.dateFormat(dt,'yyyy-MM-dd')){
@@ -363,11 +373,10 @@ export default {
                                     }
                                 })
                             });
-                            console.log(that.pieData);
-                            console.log(that.lineData)
                     }
                }
-            } else if((month != "" && month != null)&&timeType == 1){    //1：一个月
+            } else if((month != "" && month != null)&&timeType == 1){    //1：一个月，1：月份
+            console.log("月份")
                 that.pieData = {
                         normal:0,
                         early: 0,
@@ -376,45 +385,58 @@ export default {
                         absent: 0,
                         late: 0
                     };
-                that.pieData.pieTitle = that.lineData.lineTitle = util.dateFormat(month,'yyyy年MM月') + '员工考勤统计';
-                // console.log(that.pieData.pieTitle)
-                if((userType == 0&&person == null) ||(userType == 1&&unit == null)){    //第二个选项没有选,默认统计全体员工
+                that.pieTitle = that.lineTitle = util.dateFormat(month,'yyyy年MM月') + '员工考勤统计';
+                if(person == null && unit == null){    //第二个选项没有选,默认统计全体员工
+                    that.pieTitle = that.lineTitle = util.dateFormat(month,'yyyy年MM月') + '员工考勤统计';
+                    console.log("月份+null")
                     var currentMonth = util.dateFormat(month,'yyyy-MM');
-                    // console.log(currentMonth)
                     that.monthPieAndLine(currentMonth,works);
-                    console.log(that.pieData);
-                    console.log(that.lineData)
 
                 }else{  
                     var currentMonth = util.dateFormat(month,'yyyy-MM');
                     if(userType == 0){  //一个月某个员工的饼状图
+                        console.log("月份+员工")
+                        var username = '';
+                        users.forEach(item => {
+                            if(item.number == person){
+                                username = item.name;
+                            }
+                        })
+                        that.pieTitle = util.dateFormat(month,'yyyy年MM月') +username + '考勤统计';
                         works.forEach((workItem) => {
                             if(workItem.work_date.slice(0,7) == currentMonth && workItem.number == person){
                                 that.switchWorkState(workItem.work_state);
                             }
                         });
-                        console.log(that.pieData)
                     }else{      //一个月某个部门的考勤折线图和饼状图
-                        // works.forEach(workItem => {
-                        //     users.forEach( userItem => {
-                        //         if(workItem.work_date.slice(0,7) == currentMonth&&userItem.unit_no == unit){
-                        //             console.log(workItem.work_date)
-                        //             that.switchWorkState(workItem.work_state);
-                        //         }
-                        //         if(userItem.unit_no == unit){
-                                    
-                        //         }
-                        //     })
-                        // console.log(this.pieData)
-                        // });
+                        console.log("月份+部门")
+                        var unitname = '';
+                        var choosePeople = [];
+                        units.forEach((item) => {
+                            if(item.unitNo == unit){
+                                unitname = item.unit_name;
+                            }
+                        })
+                        that.pieTitle = that.lineTitle = util.dateFormat(month,'yyyy年MM月') + unitname + '考勤统计';
+                        users.forEach(itemUser => {
+                            if(itemUser.unit_no == unit){
+                                choosePeople.push(itemUser);
+                            }
+                        })
+                        var workData = [];
+                        works.forEach(workItem => {
+                            choosePeople.forEach( userItem => {
+                                if(userItem.number == workItem.number){
+                                    workData.push(workItem);
+                                }
+                            })
+                        });
+                        that.monthPieAndLine(month,workData);
                     }
                 }
             }
         },
     },
-     created:function(){
-        this.getData();
-    }
 }
 </script>
 
