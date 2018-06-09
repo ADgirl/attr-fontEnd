@@ -118,8 +118,8 @@
 </template>
 <script>
 import modalList from './modal-list/modal-list.vue';
-import {table2csvData, csvColumns} from './data/table2csv.js';
-import {table2excelData, excelColumns} from './data/table2excel.js';
+// import {table2csvData, csvColumns} from './data/table2csv.js';
+// import {table2excelData, excelColumns} from './data/table2excel.js';
 import table2excel from '@/libs/table2excel.js';
 import companyJSON from '../component-data/company.js';
 import unitJSON from '../component-data/unit.js';
@@ -359,7 +359,7 @@ export default {
                 });
             } else if (type === 3) {
                 this.$refs.tableExport.exportCsv({
-                    filename: this.csvFileName,
+                    filename: this.excelFileName,
                     columns: this.columnsCsv.filter((col, index) => index >= this.selectMinCol - 1 && index <= this.selectMaxCol - 1),
                     data: this.csvData.filter((data, index) => index >= this.selectMinRow - 1 && index <= this.selectMaxRow - 1)
                 });

@@ -1,6 +1,6 @@
 <template>
     <div class="home" :style="{height:height+'px','overflow-x':'auto'}">
-        <h2>欢迎进入企业考勤后台管理系统</h2>
+        <h2>欢迎进入企业考勤统计管理系统</h2>
         <p>现在是北京时间<span>{{nowTime}}</span></p>
     </div> 
 </template>
@@ -23,7 +23,7 @@ export default {
         getTime(){
             // var nowTime ;
 	        var time = new Date();
-	        this.nowTime = time.getFullYear()+"年"+time.getMonth()+"月"+time.getDate()+"日"+time.getHours()+"时"+time.getMinutes()+"分"+time.getSeconds()+"秒";
+	        this.nowTime = time.getFullYear()+"年"+(time.getMonth()+1)+"月"+time.getDate()+"日"+time.getHours()+"时"+time.getMinutes()+"分"+time.getSeconds()+"秒";
 	        // document.getElementById("d").innerHTML = nowTime;
 	        // setInterval(this.getTime(),1000);
         }

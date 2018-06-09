@@ -34,8 +34,19 @@
                     <Button type="primary" size="default" icon="ios-search" @click="search">查询</Button>
                     <Button type="primary" size="default" icon="ios-trash-outline" @click="reset">重置</Button>
                 </FormItem>
+                <FormItem>
+                    <span>输入文件名：</span>
+                    <Input v-model="excelFileName" icon="document" placeholder="请输入文件名" style="width: 190px" />
+                </FormItem>
+                <!-- <FormItem>
+                    <a id="hrefToExportTable" style="postion: absolute;left: -10px;top: -10px;width: 0px;height: 0px;"></a>
+                    <Button type="primary" size="small" @click="exportExcel">导出Xls格式数据</Button>
+                </FormItem> -->
+                <FormItem>
+                    <Button type="primary" size="small" @click="exportData(1)">导出Cvs格式数据</Button>
+                </FormItem>
             </Form>
-            <Table border style="margin:2px;" highlight-row no-data-text="无数据" :height="height" :columns="tableColumns" :data="tableData2"></Table>
+            <Table ref="tableExport" border style="margin:2px;" highlight-row no-data-text="无数据" :height="height" :columns="tableColumns" :data="tableData2"></Table>
         </Card>
     </div>
 </template>
@@ -45,11 +56,14 @@ import personJSON from "../../component-data/user.js";
 import workJSON from "../../component-data/work_time.js";
 import managerJSON from "../../component-data/manager.js";
 import util from '../../../libs/util.js';
+import table2excel from '@/libs/table2excel.js';
+import html2canvas from 'html2canvas';
 
 export default {
   name: "attr-table",
   data() {
     return {
+      excelFileName:"",
       personJSON: [],
       unitJSON: [],
       height: 600,
@@ -244,6 +258,21 @@ export default {
       this.height = document.body.scrollHeight - 270;
   },
   methods: {
+    // exportExcel () {
+    //         table2excel.transform(this.$refs.tableExport, 'hrefToExportTable', this.excelFileName);
+    //     },
+          exportData (type) {
+            if (type === 1) {
+                this.$refs.tableExport.exportCsv({
+                    filename: this.excelFileName
+                });
+            }else if(type == 3){
+              this.$refs.tableExport.exportCsv({
+                    filename: this.excelFileName,
+                    columns: this.tableColumns.filter((col, index) => index >= 0 && index <=  5)
+                });
+            }
+        },
       reset:function(){
         this.chartFilter = {
               timeType: 0,

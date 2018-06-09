@@ -15,8 +15,8 @@ fs.open('./build/env.js', 'w', function(err, fd) {
 const webpackServer = {  
     protocol:'http://',  
     // host:'100.66.137.26', 
-    // host:'192.168.1.2', 
-    host:'10.11.2.30',
+    host:'172.25.193.246', 
+    // host:'10.16.142.142',
     port:'3000'  
 }  
 
